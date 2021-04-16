@@ -1,0 +1,50 @@
+data = {
+  "target": "waiting_01",
+  "category": "waiting",
+  "parts": {
+      "armrest": [],
+      "legs": [
+          "front left leg",
+          "front right leg",
+          "back left leg",
+          "back right leg"
+      ]
+  },
+  "svgString": [
+      "M94,107c0,-2.90836 -3.18308,-6.36617 -4,-8c-1.38042,-2.76085 0,-9.95701 0,-13c0,-24.1259 10.50002,-29.87501 31,-35c9.91797,-2.47949 24.79375,-1.47083 33,4c2.07975,1.3865 22.26453,30.73547 18,35c-9.87976,9.87976 -32.94194,5.70646 -44,14c-7.44641,5.58481 -22.46578,11 -31,11', u'M98,114c0,8.6585 28.51173,84.51173 34,90', u'M170,93c0,29.71717 33,65.95957 33,95', u'M106,153c0,14.46132 -8,27.1461 -8,42', u'M112,151c0,-6.62515 59.36688,-36 66,-36', u'M110,155c9.47907,0 10.28634,15.23789 20,12c5.71058,-1.90353 51.17712,-24.17712 55,-28c1.80221,-1.80221 -1.14366,-4.14366 -2,-5c-2.22778,-2.22778 -2.58962,-7 -7,-7"
+  ],
+  "target_url": "https://s3.amazonaws.com/shapenet-graphical-conventions/1da9942b2ab7082b2ba1fdc12ecb5c9e.png",
+  "numTrials": 10,
+  "numStrokes": 6,
+  "trialNum": 1,
+  "condition": "control",
+  "gameID": "4071-d4fa2274-0805-41c8-8ebc-819ddc2b5c56",
+  "response": "waiting_01",
+  "repetition": 0,
+  "phase": "pre",
+  "generalization": "between",
+  "drawDuration": 13.586,
+  "outcome": true,
+  "meanPixelIntensity": 0.0303,
+  "numCurvesPerSketch": 15,
+  "numCurvesPerStroke": 2.5,
+  "timedOut": false,
+  "subset": "A",
+  "low_acc": false,
+  "category_subset": "waitingA",
+  "category_subset_condition": "waitingAcontrol",
+  "crazy": false,
+  "recog_id": 32,
+  "target_shapenet": "1da9942b2ab7082b2ba1fdc12ecb5c9e",
+  "distractors": {"distractor1": "waiting_06", "distractor2": "waiting_07", "distractor3": "waiting_00"},
+  "distractors_shapenet": {"distractor1": "2eaab78d6e4c4f2d7b0c85d2effc7e09", "distractor2": "309674bdec2d24d7597976c675750537", "distractor3": "1d1641362ad5a34ac3bd24f986301745"},
+  "rep3": "",
+  "rep4": "",
+  "rep5": "",
+  "rep6": "",
+  "rep7": ""
+}
+
+
+
+
