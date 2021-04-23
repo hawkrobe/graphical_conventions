@@ -1,6 +1,8 @@
 # Graphical conventions: learning from iterated visual communication
 How do people agree on ways of communicating visual concepts?
 
+**Note: This repo reflects the state of the codebase used for the journal article. To access the earlier version of the codebase as of CogSci 2019, please refer to: https://github.com/cogtoolslab/graphical_conventions_cogsci19.**
+
 
 ## workflow
 
