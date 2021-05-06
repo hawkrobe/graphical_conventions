@@ -1,5 +1,3 @@
-from __future__ import division
-
 import torch
 import torchvision.models as models
 import torch.nn as nn
@@ -20,7 +18,7 @@ import re
 from PIL import Image
 import base64
 
-from embeddings_images import *
+from embeddings import *
 
 '''
 To extract features, run, e.g.:
@@ -50,6 +48,9 @@ def check_invalid_sketch(filenames,invalids_path='drawings_to_exclude.txt'):
         if f not in invalids:
             valids.append(filenames[i])
     return valids
+
+def flatten_list(x):
+    return np.array([item for sublist in x for item in sublist])
 
 def save_features(features, meta, args):
     features_fname = '' 
@@ -101,7 +102,7 @@ if __name__ == "__main__":
                                  spatial_avg=args.spatial_avg)
     #Features,RunNums,GameIDs,\
     #TrialNums,Conditions,Targets,Repetitions = extractor.extract_feature_matrix(True)   
-    features, paths = extractor.extract_feature_matrix(False) # changed 
-    meta = pd.DataFrame({'path' : list(extractor.flatten_list(paths))})
+    features, paths = extractor.extract_feature_matrix() # changed 
+    meta = pd.DataFrame({'path' : list(flatten_list(paths))})
     if args.test==False:        
         save_features(features, meta, args)

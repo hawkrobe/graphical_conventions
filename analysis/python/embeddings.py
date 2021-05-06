@@ -95,7 +95,7 @@ class FeatureExtractor():
     def load_image(self, path):
         im = Image.open(path)
         if self.data_type=='sketch': ## if the latter condition satisfied, could be 2-dim (300,300) image
-            if (len(np.array(im).shape)==3):
+            if (len(np.array(im).shape)==3) & (np.array(im).shape[-1]==3):
                 im_ = im
             else:
                 im_ = im.convert(mode="RGB")
@@ -103,12 +103,12 @@ class FeatureExtractor():
             im_ = im
 
         loader = transforms.Compose([
-            transforms.Pad(padding),
-            transforms.CenterCrop(imsize),
-            transforms.Resize(imsize),
+            transforms.Pad(self.padding),
+            transforms.CenterCrop(self.imsize),
+            transforms.Resize(self.imsize),
             transforms.ToTensor()])
-
-        im = Variable(loader(im_), volatile=volatile)
+        with torch.no_grad():
+            im = Variable(loader(im_))
         # im = im.unsqueeze(0)
         if use_cuda:
             im = im.cuda(self.cuda_device)
@@ -124,9 +124,6 @@ class FeatureExtractor():
             p.requires_grad = False
 
         return vgg19
-
-    def flatten_list(x):
-        return np.array([item for sublist in x for item in sublist])
 
     def get_metadata_from_path(path): # change later to be consistent
         ## sample sketch path: 5947-794501d9-b90d-4151-a7c9-149c399c5df3_dining_06_03.png
@@ -150,8 +147,8 @@ class FeatureExtractor():
         extractor = self.load_vgg19(self.layer)
 
         # initialize sketch and label matrices
-        Features = []
-        Paths = []
+        features = []
+        paths = []
         n = 0
         quit = False
 
@@ -164,7 +161,7 @@ class FeatureExtractor():
                 if use_cuda:
                     img_batch = img_batch.to(self.cuda_device)
 
-                if (n+1)%20==0:
+                if (n+1)%5==0:
                     print('Batch {}'.format(n + 1))
 
                 for b in range(batch_size):
@@ -178,20 +175,26 @@ class FeatureExtractor():
                         print('stopped!')
                         break
 
-                n = n + 1
                 if n == self.num_images//self.batch_size:
-                    img_batch = img_batch.narrow(0,0,b)
+                    print('b', b)
+                    print(img_batch.size())
+                    img_batch = torch.narrow(img_batch,0,0,b)
+                    print(img_batch.size())
                     paths_batch = paths_batch[:b + 1]
 
                 # extract features from batch
+                n += 1
                 feats_batch = extractor(img_batch)
-                feats_batch = feats_batch.cpu().data.numpy()
+                feats_batch = [feat.cpu().data.numpy() for feat in feats_batch]
+                feats_batch = np.squeeze(np.array(feats_batch), axis=0)
+                #                feats_batch = feats_batch.cpu().data.numpy()
+#                print('features shape', features.shape)
 
                 if len(features)==0:
                     features = feats_batch
                 else:
                     features = np.vstack((features,feats_batch))
-                
+                    
                 paths.append(paths_batch)
                 if n == self.num_images//batch_size + 1:
                     break
