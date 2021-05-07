@@ -7,7 +7,6 @@ import argparse
 
 '''
 To upload data, run:
-
 python upload_data.py --path_to_data=/mnt/pentagon/data/share/graphical_conventions/features --bucket_name=graphical-conventions
 
 '''
