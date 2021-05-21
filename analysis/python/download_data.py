@@ -15,7 +15,7 @@ def str2bool(v):
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
-  parser.add_argument('--path_to_data', type=str, help='path to data', default='../results/features/')
+  parser.add_argument('--path_to_data', type=str, help='path to data', default='../../data/features/')
   parser.add_argument('--bucket_name', type=str, help='bucket_name', default='graphical-conventions')
   parser.add_argument('--overwrite', type=str2bool, help='if True, will overwrite local with download from S3',
                       default='False')
