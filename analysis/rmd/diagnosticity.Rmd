@@ -1,0 +1,150 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(lme4)
+```
+
+```{r}
+d.overlap <- read_csv('../results/csv/graphical_conventions_group_data_run5_submitButton_sketchOverlap.csv') %>%
+  group_by(obj_id) %>%
+  mutate(rep1 = floor((row_number() -1) / 8),
+         rep2 = (row_number() - 1) %% 8)
+
+d.diagnosticity <- read_csv('../results/csv/graphical_conventions_group_data_run5_submitButton_diagnosticity.csv') %>%
+  select(-png, -svgString) %>%
+  filter(!is.na(diagnosticity))
+```
+
+```{r}
+library(lmerTest)
+d.diagnosticity %>%
+  filter(phase != "repeated") %>%
+  mutate(phase = factor(phase), condition = factor(condition)) %>%
+  lmer(diagnosticity ~ phase * condition + (1 + phase + condition | target) + (1 +phase +  condition | gameID),
+       data = .,
+       contrasts = list(phase = contr.sum(2), condition = contr.sum(2)),
+       control = lmerControl(optimizer = 'bobyqa')) %>%
+  # nlme::lme(diagnosticity ~ phase * condition,
+  #         random = ~ phase * condition | gameID,
+  #         data = .,
+  #         contrasts = list(phase = contr.sum(2), condition = contr.sum(2)),
+  #         control = nlme::lmeControl(opt='optim', maxIter = 1000)) %>%
+  summary()
+
+```
+
+# Plot changes in overall diagnosticity/entropy
+
+```{r}
+d.diagnosticity %>%
+  filter(phase != "repeated") %>%
+  mutate(phase = fct_relevel(phase, 'pre')) %>%
+  group_by(phase, condition) %>%
+  tidyboot::tidyboot_mean(diagnosticity) %>%
+  ggplot(aes(x = phase, y = empirical_stat, color = condition, group = condition)) +
+    geom_line() +
+    geom_point() +
+    geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0) +
+    theme_classic()
+```
+
+
+
+```{r}
+d.overlap %>%
+  ggplot(aes(x = AOU, y = diagnosticity_change)) +
+    geom_point(alpha = 0.1, size = 0.1) +
+    facet_grid(rep1 ~ rep2) +
+    geom_smooth(method = 'lm', se=F, ) +
+    theme_classic() +
+    theme(aspect.ratio = 1)
+
+ggsave('diagnosticity_change.pdf')
+```
+
+```{r}
+d.overlap %>%
+  group_by(obj_id) %>%
+  mutate(rep1 = floor((row_number() -1) / 8),
+         rep2 = (row_number() - 1) %% 8) %>%
+  group_by(rep1, rep2) %>%
+  summarize(r = cor(AOU, diagnosticity_change, method = 'spearman', use = "pairwise.complete.obs")) %>%
+  ggplot(aes(x = rep1, y = rep2, fill = r)) +
+    geom_tile() +
+    theme_classic() +
+    theme(aspect.ratio = 1) +
+    scale_y_reverse()
+```
+
+```{r}
+library(broom)
+d.overlap %>%
+  group_by(rep1, rep2) %>%
+  do(fit =cor.test(.$diagnosticity_change, .$AOU, method = 'spearman', use = "pairwise.complete.obs")) %>%
+  tidy(fit) %>%
+  mutate(p.value.coarse = case_when(is.na(p.value) ~ 'NA',
+                                    p.value > 0.05 ~ 'n.s.',
+                                    p.value > 0.01 ~ '*',
+                                    p.value > 0.001 ~ '**',
+                                    TRUE ~ '***')) %>%
+  ungroup() %>%
+  mutate(p.value.coarse = as.factor(p.value.coarse),
+         p.value.coarse = fct_relevel(p.value.coarse, 'NA', 'n.s.', '*', '**', '***')) %>%
+  ggplot(aes(x = rep1, y = rep2, fill = p.value.coarse)) +
+    geom_tile() +
+    theme_classic() +
+    theme(aspect.ratio = 1) +
+    scale_y_reverse() +
+    scale_fill_brewer(palette = 'Blues')
+
+
+```
+
+
+# Plot relationship between total reduction in pixel intensity & diagnosticity
+
+Maybe drawings that reduce more will show greater change in diagnosticity 
+
+```{r}
+d.change <- d.diagnosticity %>%
+  select(gameID, target, phase, diagnosticity, condition, numStrokes, entropy) %>%
+  filter(phase != 'repeated') %>%
+  group_by(gameID, target) %>%
+  pivot_wider(
+    names_from = phase,
+    values_from = c("diagnosticity", "numStrokes", "entropy"),
+  ) %>%
+  mutate(diagnosticity_change = diagnosticity_post - diagnosticity_pre,
+         entropy_change = entropy_post - entropy_pre,
+         stroke_change = numStrokes_post - numStrokes_pre)
+
+d.change %>%
+  ggplot(aes(x = stroke_change, y = diagnosticity_change, color = condition)) +
+    geom_point() +
+    geom_smooth(method = 'lm') +
+    theme_classic()
+
+d.change %>%
+  ggplot(aes(x = diagnosticity_change)) +
+    geom_histogram() +
+    facet_wrap(~ condition) +
+    theme_classic()
+```
+
+## Supplemental
+
+Look at response latency of annotators?
+
+```{r}
+d_stroke_annotations <- read_csv('../results/csv/semantic_mapping_annotations_stroke.csv')
+d_stroke_annotations %>% 
+  mutate(logLatency = log(responseLatency)) %>%
+  ggplot(aes(x = logLatency))  +
+    geom_histogram(bins = 50) +
+    geom_vline(xintercept = 8) +
+    theme_classic()
+```
