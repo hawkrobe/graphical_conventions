@@ -1,10 +1,17 @@
 # Quick start
 
+Our primary communication experiment is implemented using JavaScript and `node.js`, a server-side environment that supports real-time, multi-player networking (see [Hawkins, 2015](https://link.springer.com/article/10.3758/s13428-014-0515-6) for more details). To demo this experiment:
+
+1. [install node and npm](https://nodejs.org/en/). 
+2. navigate inside the `./reference-game` subdirectory and run `npm install` to install dependencies.
+3. run `node app.js` to launch the experiment.
+4. the demo will then be accessible in your local browser at `localhost:8889/index.html` (open two tabs to play both roles). 
+
+Our recognition task (`./recognition`) and diagnosticity-related annotation tasks (`./object-diagnosticity` and `./sketch-mapping`) are implemented using [`jsPsych`](https://www.jspsych.org/). To demo these experiments, please follow the same instructions as above from inside their respective sub-directories. 
+
+## Software requirements
+
 Our experiments were designed to be run in modern web browsers (e.g. Chrome 93, Firefox 71). 
-
-Our primary communication experiment is implemented using JavaScript and `node.js`, a server-side environment that supports real-time, multi-player networking (see [Hawkins, 2015](https://link.springer.com/article/10.3758/s13428-014-0515-6) for more details). To demo this experiment, first [install node and npm](https://nodejs.org/en/). Then navigate inside the `./reference-game` subdirectory, run `npm install` to install dependencies, and then run `node app.js` to launch the experiment. The demo will then be accessible in your local browser at `localhost:8889/index.html` (open two tabs to play both roles). 
-
-Our recognition task (`./recognition`) and diagnosticity-related annotation tasks (`./object-diagnosticity` and `./sketch-mapping`) are implemented using [`jsPsych`](https://www.jspsych.org/). To demo these experiments, please follow the same instructions as above from inside the respective sub-directory. 
 
 ## Database backend
 
