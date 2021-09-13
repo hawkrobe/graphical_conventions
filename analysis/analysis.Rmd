@@ -12,14 +12,15 @@ library(lmerTest)
 library(brms)
 library(broom.mixed)
 library(tidyboot)
+library(here)
 ```
 
 # Import group data
 
 ```{r}
 # '1.2' is our original, '2.0' is the internal replication with no listener interruptions & balanced contexts'
-version = '2.0'
-prefix = '../../data/experiment/graphical_conventions'
+version = '1.2'
+prefix = '../data/experiment/graphical_conventions'
 path = ifelse(version == '1.2', 'run3run4.csv', 'run5_submitButton.csv')
 
 d <- paste0(prefix, '_group_data_', path) %>%
@@ -245,7 +246,6 @@ model.input %>%
       data = . )
 ```
 
-
 Raw accuracy diff in pre and post
 
 ```{r}
@@ -284,6 +284,7 @@ M_mat = read_csv(paste0(prefix, '/METADATA.csv')) %>%
          repetition = as.numeric(repetition)) %>% # Have to correct for R 1-indexing...
   arrange(gameID, target, repetition) 
 ```
+
 run stats
 
 ```{r}
@@ -324,8 +325,6 @@ ggplot(empirical.within, aes(x = `rep diff`, y = empirical_stat,
     theme(legend.position = c(0.5, 0.8), text = element_text(size=18), 
           element_line(size=1), element_rect(size=2, color="#00000"))
 
-
-  
 prefix = '../../results/plots/within'
 ggsave(paste0(prefix, version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
 ```
@@ -335,11 +334,17 @@ ggsave(paste0(prefix, version, '.pdf'), height = 10, width = 7, units = 'cm', us
 ### load in data from control conditions
 
 ```{r}
-d.recog <- read_csv(paste0('../../data/experiment/graphical_conventions_recog_data_bis_', path)) %>%
+d.recog <- read_csv(paste0('../data/experiment/graphical_conventions_recog_data_bis_', path)) %>%
   mutate(version = factor(version, levels = c("refgame","yoked","scrambled40"), labels = c("communication", "yoked", "shuffled" ))) 
 ```
 
 ```{r}
+d.recog %>%
+  filter(version != 'communication') %>%
+  pull(gameID) %>%
+  unique() %>%
+  length()
+
 d.recog %>%
   group_by(gameID, version) %>%
   tally() %>%
@@ -347,9 +352,9 @@ d.recog %>%
   tally()
 ```
 
-## Analysis of task performance efficiency (BIS, balancing accuracy vs. drawDuration)
+### Analysis of task performance efficiency (BIS, balancing accuracy vs. drawDuration)
 
-### get bootstrapped relative BIS x repetition, broken out by version
+get bootstrapped relative BIS x repetition, broken out by version
 
 ```{r}
 d.recog.boot = d.recog %>%
@@ -358,44 +363,47 @@ d.recog.boot = d.recog %>%
   ungroup()
 ```
 
-### plotting BIS  from refgame, yoked, and scrambled40 experiments
+plotting BIS  from refgame, yoked, and scrambled40 experiments
 
 ```{r}
 d.recog.boot %>%  
   ggplot(aes(x = repetition_1, y = empirical_stat, color = version, fill = version)) +
-  geom_line(size=1.5) +
-  # geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper, width = 0)) +
-  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2, color = NA) +
-  theme_few() +
-  ylab('relative efficiency') +
-  xlab('repetition') +
-  # geom_hline(aes(yintercept=0.25),linetype='dashed') +
-  scale_x_continuous(breaks=seq(1,8,by=1)) + 
-  scale_color_manual(values=c("#163c4e", "#658da0", '#54792f')) + 
-  scale_fill_manual(values=c("#163c4e", "#658da0", '#54792f')) +   
-  theme(legend.position = c(0.18, 0.8), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000")) +
-  theme(legend.text=element_text(size=12), legend.background = element_rect(fill="transparent"))
+    geom_line(size=1.5) +
+    geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2, color = NA) +
+    theme_few() +
+    ylab('relative efficiency') +
+    xlab('repetition') +
+    scale_x_continuous(breaks=seq(1,8,by=1)) + 
+    scale_color_manual(values=c("#163c4e", "#658da0", '#54792f')) + 
+    scale_fill_manual(values=c("#163c4e", "#658da0", '#54792f')) +   
+    theme(legend.position = c(0.18, 0.8), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000")) +
+    theme(legend.text=element_text(size=12), legend.background = element_rect(fill="transparent"))
+
 ggsave('../../results/plots/recog_BIS_timeseries.pdf', width=14, height = 10, units='cm')
 ```
 
-### mixed-effects modeling of BIS (balancing accuracy vs. drawDuration) from communication vs. yoked experiments
-
-```{r}
-m1 <- summary(lmer(bis_relative ~ version * repetition + (1 + version * repetition | orig_gameID), 
-              data = d.recog %>% filter(version %in% c('communication', 'yoked'))))
-summary(m1)
-```
-
-### mixed-effects modeling of BIS (balancing accuracy vs. drawDuration) from yoked vs. scrambled40 experiments
+mixed-effects modeling of BIS (balancing accuracy vs. drawDuration) from communication vs. yoked experiments
 
 ```{r}
 library(lmerTest)
-m2 <-summary(lmer(bis_relative ~ version * repetition + (1 + repetition | gameID), 
-              data = d.recog %>% filter(version %in% c('yoked', 'shuffled'))))
-summary(m2)
+d.recog %>% 
+  filter(version %in% c('communication', 'yoked')) %>%
+  lmer(bis_relative ~ version * repetition + (1 + version * repetition | orig_gameID), 
+       data = .) %>%
+  summary()
 ```
 
-## Analysis of change in raw accuracy & RT across all three groups: communication, yoked, shuffled
+mixed-effects modeling of BIS (balancing accuracy vs. drawDuration) from yoked vs. scrambled40 experiments
+
+```{r}
+d.recog %>% 
+  filter(version %in% c('yoked', 'shuffled')) %>%
+  lmer(bis_relative ~ version * repetition + (1 + repetition | gameID), 
+              data = .) %>%
+  summary()
+```
+
+### Analysis of change in raw accuracy & RT across all three groups: communication, yoked, shuffled
 
 ```{r}
 d.acc <- read_csv(paste0('../../data/experiment/graphical_conventions_recog_data_', path)) %>%
@@ -413,16 +421,17 @@ d.acc %>%
   mutate(diff = `7` - `0`) 
 ```
 
-#### Comparing communication and yoked accuracies
+Comparing communication and yoked accuracies
 
 ```{r}
-d.acc.commyoke <- d.acc %>% filter(version %in% c('communication','yoked')) 
-
-m1a <- summary(lmer(accuracy ~ version + (1 | gameID),
-              data = d.acc))
-summary(m1a)
+d.acc %>% 
+  filter(version %in% c('communication','yoked')) %>%
+  lmer(accuracy ~ version + (1 | gameID),
+      data = .)) %>%
+  summary()
 ```
-##### Plotting accuracy timecourse for communication and yoked
+
+Plotting accuracy timecourse for communication and yoked
 
 ```{r}
 d.acc.boot = d.acc %>%
@@ -432,20 +441,18 @@ d.acc.boot = d.acc %>%
 
 d.acc.boot %>%  
   ggplot(aes(x = repetition, y = empirical_stat, color = version, fill = version)) +
-  geom_line(size=1.5) +
-  # geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper, width = 0)) +
-  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2, color = NA) +
-  theme_few() +
-  ylab('accuracy') +
-  xlab('repetition') +
-  geom_hline(aes(yintercept=0.25),linetype='dashed') +
-  scale_x_continuous(breaks=seq(1,8,by=1)) + 
-  scale_color_manual(values=c("#163c4e", "#d07e93", '#54792f')) + 
-  scale_fill_manual(values=c("#163c4e", "#d07e93", '#54792f')) +   
-  theme(legend.position = c(0.18, 0.8), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000")) +
-  theme(legend.text=element_text(size=12), legend.background = element_rect(fill="transparent"))
+    geom_line(size=1.5) +
+    geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2, color = NA) +
+    theme_few() +
+    ylab('accuracy') +
+    xlab('repetition') +
+    geom_hline(aes(yintercept=0.25),linetype='dashed') +
+    scale_x_continuous(breaks=seq(1,8,by=1)) + 
+    scale_color_manual(values=c("#163c4e", "#d07e93", '#54792f')) + 
+    scale_fill_manual(values=c("#163c4e", "#d07e93", '#54792f')) +   
+    theme(legend.position = c(0.18, 0.8), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000")) +
+    theme(legend.text=element_text(size=12), legend.background = element_rect(fill="transparent"))
 ```
-
 
 ### Interaction history contributes to gains in recognition performance
 
@@ -462,7 +469,6 @@ true_lmer.across <- lmer(sim ~ poly(repetition, 2) + (1 + repetition | gamepair)
                          data = gamepair.df,
                          control = lmerControl(optimizer = 'bobyqa'))
 summary(true_lmer.across)
-#true_tstat.across <- coef(summary(true_lmer.across))[,"t value"][2]
 ```
 
 ```{r}
@@ -471,14 +477,6 @@ empirical.across <- compute_across_similarity(M_mat, F_mat_raw_nonorm,
 ```
 
 ```{r}
-# d.toplot <- rbind(empirical.across %>% select(-mean, -n),
-#       baselines.across %>% 
-#         group_by(repetition) %>%
-#         summarize(`ci_upper`=quantile(empirical_stat, probs=0.975),
-#                   `ci_lower`=quantile(empirical_stat, probs=0.025),
-#                   `empirical_stat`=quantile(empirical_stat, probs=0.5)) %>%
-#         mutate(sample_id = 'baseline')) %>%
-#         mutate(repetition = repetition + 1)
 ggplot(d.toplot, aes(x = repetition, y = empirical_stat, group = sample_id, 
                      color = sample_id, fill=sample_id)) +
   geom_ribbon(alpha = 0.25, aes(ymin = ci_lower, ymax = ci_upper), color = NA,
@@ -505,7 +503,215 @@ prefix = '../../results/plots/across'
 ggsave(paste0(prefix, version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
 ```
 
-# Additional exploratory analyses that didn't make it into the paper...
+# Section 3: Diagnosticity
+
+```{r}
+d.diagnosticity <- read_csv(here('data/diagnosticity/graphical_conventions_group_data_run5_submitButton_diagnosticity.csv')) %>%
+  select(-png, -svgString) %>%
+  filter(!is.na(diagnosticity))
+
+d.objectmap <- read_csv(here('data/diagnosticity/semantic_mapping_annotations_object.csv'))
+d.strokemap <- read_csv(here('data/diagnosticity/semantic_mapping_annotations_stroke.csv')) 
+```
+
+```{r}
+d.objectmap  %>% pull(aID) %>% unique() %>% length()
+d.strokemap  %>% pull(annotatorID) %>% unique() %>% length()
+d.strokemap  %>% unite(id, gameID, targetID, repetition) %>% pull(id) %>% unique() %>% length()
+```
+
+```{r}
+# we checked that these don't affect the outcome
+outliers <- c('5535-af4e7c1c-b29d-4130-b236-7c050622d17e', '9345-78852c80-4277-4c8a-b950-7fec3d6b6c29')
+library(lmerTest)
+d.diagnosticity %>%
+  filter(phase != "repeated") %>%
+  mutate(phase = factor(phase), condition = factor(condition)) %>%
+  lmer(scale(diagnosticity) ~ phase * condition + (1 + phase + condition | target) + (1 +  condition | gameID),
+       data = .,
+       contrasts = list(phase = contr.sum(2), condition = contr.sum(2))) %>%
+  summary()
+```
+
+# Plot changes in overall diagnosticity
+
+```{r}
+d.diagnosticity %>%
+  filter(phase %in% c('pre', 'post')) %>%
+  mutate(phase = fct_relevel(phase, 'pre', 'repeated')) %>%
+  group_by(phase, condition) %>%
+  tidyboot::tidyboot_mean(diagnosticity) %>%
+  ggplot(aes(x = phase, y = empirical_stat, color = condition, group = condition)) +
+    geom_line(size = 1.5, position=position_dodge(.05)) +
+    geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, size = 1.5, position = position_dodge(.05)) +
+    labs(y = 'mean diagnosticity', x = '') +
+    ylim(0.3, 0.4) +
+    scale_color_manual(values = c('#808080', '#163C4E')) +
+    theme_few() +
+    theme(aspect.ratio = 1)
+
+ggsave('../../graphical_conventions_latex/nhb2020/figures/diagnosticity_change.pdf',
+       width = 4, height = 4)
+```
+
+```{r}
+d.diagnosticity %>%
+  filter(phase %in% c('pre', 'post')) %>%
+  select(gameID, target, condition, phase, diagnosticity) %>%
+  spread(phase, diagnosticity) %>%
+  mutate(diff = post - pre) %>%
+  group_by(gameID, condition) %>%
+  summarize(diff = mean(diff)) %>%
+  spread(condition, diff) %>%
+  mutate(double_diff = repeated - control) %>%
+  gather(condition, diff, repeated, control) %>%
+  group_by(condition) %>%
+  mutate(mean_diff = mean(diff, na.rm = T)) %>%
+  ggplot(aes(x = condition, y = diff)) +
+    geom_line(aes(group = gameID, color = double_diff > 0), alpha = 0.5) +
+    geom_point(aes(color = double_diff > 0), alpha = 0.25) +
+    geom_point(aes(y = mean_diff), size = 4) +
+    geom_line(aes(y = mean_diff, group = 1), size = 2, color = 'black') +
+    geom_hline(yintercept = 0, linetype = 'dotted') +
+    labs(y = 'mean change in diagnosticity', x = '') +
+    theme_few() +
+    theme(aspect.ratio = 1, legend.position = 'none')
+```
+
+# Supplemental analyses
+
+## Relationship between intesity and diagnosticity 
+
+If people aren't changing their sketches at all, we don't really expect diagnosticity to change.
+
+Here we look at the relationship between intensity change and diagnosticity change, i.e. conditioned on people who actually changed the way they drew, did it make it more or less diagnostic?
+
+```{r}
+d.diagnosticity %>%
+  filter(phase %in% c('pre', 'post')) %>%
+  select(gameID, target, condition, phase, intensity, diagnosticity) %>%
+  gather(measure, value, intensity, diagnosticity) %>%
+  spread(phase, value) %>%
+  mutate(diff = post - pre) %>%
+  select(-post, -pre) %>%
+  spread(measure, diff) %>%
+  group_by(condition) %>%
+  mutate(diagnosticity = scale(diagnosticity),
+         intensity = scale(intensity),
+         mean_diagnost = mean(diagnosticity, na.rm = T),
+         mean_intensity = mean(intensity, na.rm = T)) %>%
+  ggplot(aes(x = intensity, y = diagnosticity)) +
+    geom_point(alpha = 0.1, size = 1) +
+    geom_smooth(method = 'lm', se=T, fullrange=TRUE ) +
+    xlim(-5,5) +
+    ylim(-5,5) +
+    geom_point(aes(x = mean_diagnost, y = mean_intensity), size = 4) +
+    theme_classic() +
+    theme(aspect.ratio = 1)
+
+ggsave('diagnosticity_change.pdf')
+```
+
+```{r}
+d.cor <-d.diagnosticity %>%
+  filter(phase %in% c('pre', 'post')) %>%
+  select(gameID, target, condition, phase, intensity, diagnosticity) %>%
+  gather(measure, value, intensity, diagnosticity) %>%
+  spread(phase, value) %>%
+  mutate(diff = post - pre) %>%
+  select(-post, -pre) %>%
+  spread(measure, diff) %>%
+  mutate(diagnosticity = scale(diagnosticity),
+         intensity = scale(intensity),
+         mean_diagnost = mean(diagnosticity, na.rm = T),
+         mean_intensity = mean(intensity, na.rm = T)) %>%
+  filter(intensity > -4, intensity < 4) #%>%
+
+cor.test(d.cor$intensity, d.cor$diagnosticity, method = 'pearson', use = 'na.or.complete')
+```
+
+Alt way of running diagnosticity regression purely on difference scores?
+
+```{r}
+d.diagnosticity %>%
+  filter(phase %in% c('pre', 'post')) %>%
+  select(gameID, target, condition, phase, intensity, diagnosticity) %>%
+  gather(measure, value, intensity, diagnosticity) %>%
+  spread(phase, value) %>%
+  mutate(diff = post - pre) %>%
+  select(-post, -pre) %>%
+  spread(measure, diff) %>%
+  lmer(diagnosticity ~ condition + (1 | gameID) + (1 | target), 
+       data = .,
+       control = lmerControl(optimizer = 'bobyqa')) %>%
+    summary()
+```
+
+## Probe source of diagnosticity change
+
+Note that diagnosticity can go up because either (1) additional diagnostic strokes that didn't appear at the beginning were ADDED by the end or (2) undiagnostic strokes at the beginning were REMOVED by the end. 
+
+```{r}
+d.overlap <- read_csv(here('./data/diagnosticity/graphical_conventions_group_data_run5_submitButton_sketchOverlap.csv')) %>%
+  group_by(obj_id) %>%
+  mutate(rep1 = floor((row_number() -1) / 8),
+         rep2 = (row_number() - 1) %% 8) %>%
+  filter(rep1 == 0, rep2 == 7)
+
+d.overlap %>%
+  gather(measure, value, IOU, AOU, BOU) %>%
+  ggplot(aes(x = measure, y = value, color = measure)) +
+    geom_boxplot() +
+    geom_jitter(alpha = 0.05) +
+    theme_classic() +
+    theme(aspect.ratio = 1)
+```
+
+```{r}
+d.overlap %>%
+  ggplot(aes(x = AOU, y = BOU)) +
+    geom_bin2d() +
+    geom_abline(intercept = 1, slope = -1) +
+    geom_abline(intercept = 0, slope = 1, linetype = 'dashed', alpha = 0.25) +
+    ylim(0,1) +
+    xlim(0,1) +
+    theme_classic() +
+    theme(aspect.ratio = 1)
+```
+
+
+```{r}
+d.overlap %>%
+  group_by(rep1, rep2) %>%
+  do(fit =cor.test(.$diagnosticity_change, .$AOU, method = 'spearman', use = "pairwise.complete.obs")) %>%
+  tidy(fit) %>%
+  mutate(p.value.coarse = case_when(is.na(p.value) ~ 'NA',
+                                    p.value > 0.05 ~ 'n.s.',
+                                    p.value > 0.01 ~ '*',
+                                    p.value > 0.001 ~ '**',
+                                    TRUE ~ '***')) %>%
+  ungroup() %>%
+  mutate(p.value.coarse = as.factor(p.value.coarse),
+         p.value.coarse = fct_relevel(p.value.coarse, 'NA', 'n.s.', '*', '**', '***')) %>%
+  ggplot(aes(x = rep1, y = rep2, fill = p.value.coarse)) +
+    geom_tile() +
+    theme_classic() +
+    theme(aspect.ratio = 1) +
+    scale_y_reverse() +
+    scale_fill_brewer(palette = 'Blues')
+```
+
+Look at response latency of annotators?
+
+```{r}
+d_stroke_annotations <- read_csv('../results/csv/semantic_mapping_annotations_stroke.csv')
+d_stroke_annotations %>% 
+  mutate(logLatency = log(responseLatency)) %>%
+  ggplot(aes(x = logLatency))  +
+    geom_histogram(bins = 50) +
+    geom_vline(xintercept = 8) +
+    theme_classic()
+```
 
 ## Histograms for bis, numCurvesPerSketch and numStrokes 
 
@@ -537,13 +743,12 @@ true_lmer.drift <- make_within_df(M_mat, F_mat_raw_nonorm, 'cor') %>%
   ungroup()
 true_lmer.drift.out <- lmer(sim ~ poly(rep2,2) + (1  | gameID) + (1 | target), data = true_lmer.drift)
 
+# scramble repetition
 permuted_tstats.drift <- map_dbl(seq_len(1000), ~ M_mat %>%
- # scrambles repetition
   group_by(target, repetition) %>% mutate(gameID = sample(gameID)) %>% ungroup() %>%
   arrange(gameID, target, repetition) %>%
   make_within_df(F_mat_raw_nonorm, 'cor') %>%
   filter(rep1 == 0) %>% 
-  # turns into a list to make `map` happy
   ungroup() %>%  mutate(sample_id = 1) %>% split(.$sample_id) %>%
   map(~ lmer(sim ~ poly(rep2,2) + (1 | gameID) + (1 | target), data = .)) %>%
   map(~ (tidy(., effects = 'fixed') %>% filter(term == 'poly(rep2, 2)1'))$statistic) %>%
@@ -577,7 +782,6 @@ ggplot(d.toplot.drift, aes(x = `rep diff`, y = empirical_stat,
              fill = sample_id, color = sample_id, group = sample_id)) +
     geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.5, color = NA,
                 d.toplot.drift %>% filter(sample_id == 'baseline')) +
-    #geom_line(alpha = 0, size = 2) +
     geom_line(size = 1, linetype = 'dashed', data = d.toplot.drift %>% filter(sample_id == 'baseline')) +
     geom_point(size = 2, data = d.toplot.drift %>% filter(sample_id == 'empirical')) +
     geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0,
@@ -622,14 +826,11 @@ rbind(compute_across_similarity(filtered_M, F_mat_raw_nonorm, 'raw_euclid_nonorm
       compute_across_similarity(filtered_M, F_mat_PCA_norm,   'PCA_cor_norm',      method = 'cor')) %>%
       separate(sample_id, into = c('PCA', 'dist', 'norm')) %>%
       ggplot(aes(x = repetition, y = empirical_stat, color = norm)) + 
-        #geom_line(alpha = 0.1) +
         geom_line() +
         geom_ribbon(aes(ymax = ci_upper, ymin = ci_lower), color = NA, alpha = .5) +
         theme_few() +
         facet_grid(dist ~ PCA, scales = 'free') +
         theme(aspect.ratio = 2)
-  #geom_smooth(group = 1, method = 'loess')
-  #geom_smooth(group = 1)
 ggsave('unfiltered.pdf')
 ```
 
@@ -638,7 +839,6 @@ How well are these different steps correlated?
 ```{r}
 rbind(compute_across_similarity(M_mat, F_mat_PCA_norm, 'PCA_cor_norm',    method = 'cor'),
       compute_across_similarity(M_mat, F_mat_raw_nonorm, 'raw_cor_nonorm',    method = 'cor')) %>%
-      #separate(sample_id, into = c('PCA', 'dist', 'norm')) %>%
   select(repetition, sample_id, empirical_stat) %>%
   spread(sample_id, empirical_stat) %>%
   mutate(spcor = cor(PCA_cor_norm,raw_cor_nonorm, method='pearson')) %>%
