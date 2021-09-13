@@ -74,8 +74,7 @@ if __name__ == "__main__":
     parser.add_argument('--data_type', help='"images" or "sketch"', default='images')
     parser.add_argument('--spatial_avg', type=bool, help='collapse over spatial dimensions, preserving channel activation only if true', default=True)     
     parser.add_argument('--test', type=bool, help='testing only, do not save features', default=False)  
-    parser.add_argument('--ext', type=str, help='image extension type (e.g., "png")', default="png")    
-
+    parser.add_argument('--ext', type=str, help='image extension type (e.g., "png")', default="png")        
     args = parser.parse_args()
     
     ## get list of all sketch paths
@@ -88,7 +87,12 @@ if __name__ == "__main__":
     
     ## extract features
     layers = ['P1','P2','P3','P4','P5','FC6','FC7']
-    extractor = FeatureExtractor(image_paths,layer=args.layer_ind,data_type=args.data_type,spatial_avg=args.spatial_avg)
+    print('cuda:', torch.cuda.is_available())
+    extractor = FeatureExtractor(image_paths,
+                                 layer = args.layer_ind,
+                                 data_type = args.data_type,
+                                 spatial_avg = args.spatial_avg,
+                                 use_cuda = torch.cuda.is_available())
     Features, Labels = extractor.extract_feature_matrix()   
     
     # organize metadata into dataframe

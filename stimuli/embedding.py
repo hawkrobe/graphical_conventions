@@ -23,8 +23,6 @@ from PIL import Image
 ## 5: [1, 4096]
 ## 6: [1, 4096]
 
-use_cuda = torch.cuda.is_available()
-
 class VGG19Embeddings(nn.Module):
     """Splits vgg19 into separate sections so that we can get
     feature embeddings from each section.
@@ -115,7 +113,7 @@ class FeatureExtractor():
             background.paste(image, mask=image.split()[3])  # 3 is the alpha channel
             return background
 
-        def load_image(path, imsize=224, padding=self.padding, volatile=True, use_cuda=False):
+        def load_image(path, imsize=224, padding=self.padding, volatile=True):
             im = Image.open(path)
             
             if self.data_type!='images': ## only do this preprocessing if you are working with sketches
@@ -146,14 +144,16 @@ class FeatureExtractor():
                 transforms.Scale(imsize),
                 transforms.ToTensor()])
 
-            im = Variable(loader(im), volatile=volatile)
+            im = Variable(loader(im))
             # im = im.unsqueeze(0)
-            if use_cuda:
+            if self.use_cuda:
                 im = im.cuda(self.cuda_device)
             return im        
         
-        def load_vgg19(layer_index=self.layer,use_cuda=True,cuda_device=self.cuda_device):
-            vgg19 = models.vgg19(pretrained=True).cuda(self.cuda_device)        
+        def load_vgg19(layer_index=self.layer,cuda_device=self.cuda_device):
+            vgg19 = models.vgg19(pretrained=True)
+            if self.use_cuda:
+                vgg19 = vgg19.cuda(self.cuda_device) 
             vgg19 = VGG19Embeddings(vgg19,layer_index,spatial_avg=self.spatial_avg)
             vgg19.eval()  # freeze dropout
             print('CUDA DEVICE NUM: {}'.format(self.cuda_device))
@@ -168,14 +168,14 @@ class FeatureExtractor():
             label = path.split('.')[0]            
             return label        
 
-        def generator(paths, imsize=self.imsize, use_cuda=use_cuda):
+        def generator(paths, imsize=self.imsize):
             for path in paths:
                 image = load_image(path)
                 label = get_metadata_from_path(path)
                 yield (image, label)        
                                                 
         # define generator
-        generator = generator(self.paths,imsize=self.imsize,use_cuda=self.use_cuda)
+        generator = generator(self.paths,imsize=self.imsize)
         
         # initialize sketch and label matrices
         Features = []
@@ -192,14 +192,14 @@ class FeatureExtractor():
             while True:    
                 batch_size = self.batch_size
                 sketch_batch = Variable(torch.zeros(batch_size, 3, self.imsize, self.imsize))                
-                if use_cuda:
+                if self.use_cuda:
                     sketch_batch = sketch_batch.cuda(self.cuda_device)             
                 label_batch = [] 
                 if (n+1)%1==0:
                     print('Batch {}'.format(n + 1))
                 for b in range(batch_size):
                     try:
-                        sketch, label = generator.next()
+                        sketch, label = next(generator)
                         ##print(list(sketch.size()),label)
                         sketch_batch[b] = sketch 
                         label_batch.append(label)
