@@ -2,9 +2,9 @@
 
 First download raw data with `python download_data.py`.
 
-To extract CNN features from sketches, run: 
+To extract CNN features from sketches, use as follows: 
 
-`python extract_features.py --data='/data2/jefan/chairs1k/pooled' --layer_ind=6 --data_type='images' --spatial_avg=True`
+`python extract_features.py --data='../data/diagnosticity/sketches/refgame1.2/png/' --layer_ind=6 --data_type='images' --spatial_avg=True`
 
 ## Datasets
 
