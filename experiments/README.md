@@ -1,3 +1,11 @@
+# Quick start
+
+All of our experiments were designed to be run in the web browser:
+
+* Our main multi-player communication experiment is implemented using `node.js` (see [Hawkins, 2015](https://link.springer.com/article/10.3758/s13428-014-0515-6)). To run this experiment, navigate inside the *./reference-game* subdirectory, run `npm install` to install dependencies, and then run `node app.js` to launch the experiment. It will then be available in your local browser at `localhost:8889/index.html` (open two tabs to play both roles). 
+
+* Our recognition task (`./recognition`) and annotation tasks for our diagnosticity measures (`./object-diagnosticity` and `./sketch-mapping`) are implemented using [`jsPsych`](https://www.jspsych.org/). They can be demoed by following the same instructions as above from inside the respective sub-directory. However, in order to balance annotations evenly across sketches, we used a mongoDB database backend: we inserted our stimuli using the `reset_stim_database.py` scripts and responded to user requests for stimuli with a server-side process launched by running `node store.js`. Note that these scripts relied upon an private `auth.json` file containing a `user` field and `password` field for the database. 
+
 # Data collection log
 
 ## Annotation experiments
