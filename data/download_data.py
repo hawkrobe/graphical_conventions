@@ -5,11 +5,6 @@ import argparse
 from glob import glob
 import argparse
 
-'''
-To download features & metadata, use command: python download_data.py 
-
-'''
-
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
 
