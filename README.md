@@ -18,7 +18,7 @@ All data required to reproduce our findings can be obtained by running `/data/do
 
 * *Experiment* contains behavioral data from our original sample (`run3run4`) as well as our internal replication (`run5_submitButton`) of both the communication task and the recognition task. `group_data` and `recog_data_raw` mark the raw communication data and recognition data directly from our database, while `bis` marks the cleaned and pre-processed versions.
 * *Diagnosticity* contains annotations from our sketch mapping task and diagnosticity mapping task as well as pre-processed maps and masks for convenience. 
-* *Features* contains pre-extracted CNN features for all sketches. To re-extract features on a machine with GPU, please follow the instructions in `/stimuli/`. 
+* *Features* contains pre-extracted CNN features for all sketches. To re-extract features (on a GPU machine with ), please follow the instructions in `/analysis/preprocessing/`. 
 
 ## Experiments
 
@@ -31,5 +31,4 @@ We ran four different experiments. To demo or replicate these experiments, pleas
 
 ## Analyses
 
-* Reproduce behavioral analyses by running `/analysis/refgame.Rmd` notebook.
-* Reproduce diagnosticity analyses by running `/analysis/diagnosticity.Rmd` notebook.
+* Reproduce all analyses by running `/analysis/analysis.Rmd` notebook.
