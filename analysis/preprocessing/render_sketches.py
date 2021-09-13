@@ -4,6 +4,10 @@ import os, sys
 import boto3
 import botocore
 
+## add helpers to python path
+if os.path.join('../helpers') not in sys.path:
+    sys.path.append('../helpers')
+
 import json
 import re
 import ast
@@ -37,10 +41,6 @@ results_dir = os.path.join(proj_dir,'results')
 plot_dir = os.path.join(results_dir,'plots')
 csv_dir = os.path.join(results_dir,'csv')
 exp_dir = os.path.abspath(os.path.join(proj_dir,'experiments'))
-
-## add helpers to python path
-if os.path.join(proj_dir,'utils') not in sys.path:
-    sys.path.append(os.path.join(proj_dir,'utils'))
    
 ## create directories that don't already exist        
 result = [make_dir_if_not_exists(i) for i in [results_dir, plot_dir, csv_dir]]
