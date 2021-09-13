@@ -25,3 +25,7 @@ Pull down pre-processed data by running `/data/download_data.py`
 # Dependencies
 
 We have tested our code on machines running MacOS version 11.x.x and Ubuntu 18.x.x. We do not recommend using Windows. 
+
+The easiest way to reproduce our Python code is to install the [miniconda](https://docs.conda.io/en/latest/miniconda.html) package manager and create a new environment from our specification:
+
+`conda create --name graphical_conventions --file requirements.txt`
