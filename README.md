@@ -4,18 +4,22 @@ How do people agree on ways of communicating visual concepts?
 
 **Note: This repo reflects the state of the codebase used for the journal article. To access the earlier version of the codebase as of CogSci 2019, please refer to: https://github.com/cogtoolslab/graphical_conventions_cogsci19.**
 
+## Data
+
+All data required to reproduce our findings can be obtained by running `/data/download_data.py`. This will create three subdirectories:
+
+* *Experiment* contains behavioral data from our original sample (`run3run4`) as well as our internal replication (`run5_submitButton`) of both the communication task and the recognition task. `group_data` and `recog_data_raw` mark the raw communication data and recognition data directly from our database, while `bis` marks the cleaned and pre-processed versions.
+* *Diagnosticity* contains annotations from our sketch mapping task and diagnosticity mapping task as well as pre-processed maps and masks for convenience. 
+* *Features* contains pre-extracted CNN features for all sketches. To re-extract features on a machine with GPU, please follow the instructions in `/stimuli/`. 
+
 ## Experiments
 
-We ran four different experiments. Please see the [README](https://github.com/hawkrobe/graphical_conventions/blob/master/experiments/README.md) inside the `./experiments` subdirectory for installation instructions. 
+We ran four different experiments. To demo or replicate these experiments, please see the [README](https://github.com/hawkrobe/graphical_conventions/blob/master/experiments/README.md) inside the `./experiments` subdirectory for installation instructions. 
 
 * initial repeated communication task (`/experiments/reference-game/`)
 * sketch recognition task (`/experiments/recognition/`)
 * sketch-mapping task linking strokes to regions of target object (`/experiments/sketch-mapping/`)
 * diagnosticity mapping task (`/experiments/object-diagnosticity/`)
-
-## Data
-
-Pull down pre-processed data by running `/data/download_data.py`
 
 ## Analyses
 
