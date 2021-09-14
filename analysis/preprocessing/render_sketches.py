@@ -15,9 +15,6 @@ import sys
 import pymongo as pm
 import argparse
 
-import df_generation_helpers as h
-import svg_rendering_helpers as srh
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--experiment_name', type=str, 
 	help='options: refgame1.2, refgame2.0', default='refgame1.2')
@@ -33,15 +30,18 @@ def make_dir_if_not_exists(dir_name):
 proj_dir = os.path.abspath('../..')
 stimulus_dir = os.getcwd()
 analysis_dir = os.path.join(proj_dir,'analysis')
-results_dir = os.path.join(proj_dir,'results')
+results_dir = os.path.join(proj_dir,'data')
 plot_dir = os.path.join(results_dir,'plots')
-csv_dir = os.path.join(results_dir,'csv')
+csv_dir = os.path.join(results_dir,'experiment')
 exp_dir = os.path.abspath(os.path.join(proj_dir,'experiments'))
 
 ## add helpers to python path
-if os.path.join(proj_dir,'utils') not in sys.path:
-    sys.path.append(os.path.join(proj_dir,'utils'))
-   
+if os.path.join(proj_dir,'analysis','helpers') not in sys.path:
+    sys.path.append(os.path.join(proj_dir,'analysis','helpers'))
+
+import df_generation_helpers as h
+import svg_rendering_helpers as srh
+
 ## create directories that don't already exist        
 result = [make_dir_if_not_exists(i) for i in [results_dir, plot_dir, csv_dir]]
 
