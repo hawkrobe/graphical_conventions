@@ -4,6 +4,10 @@ import os, sys
 import boto3
 import botocore
 
+## add helpers to python path
+if os.path.join('../helpers') not in sys.path:
+    sys.path.append('../helpers')
+
 import json
 import re
 import ast
