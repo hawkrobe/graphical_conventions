@@ -34,4 +34,5 @@ We ran four different experiments. To demo or replicate these experiments, pleas
 
 ## Analyses
 
-* Reproduce all analyses by running `/analysis/analysis.Rmd` notebook.
+* Reproduce all model-based analyses of sketch image features by running **XXX**.
+* Reproduce all statistical analyses by running `/analysis/analysis.Rmd` notebook.
