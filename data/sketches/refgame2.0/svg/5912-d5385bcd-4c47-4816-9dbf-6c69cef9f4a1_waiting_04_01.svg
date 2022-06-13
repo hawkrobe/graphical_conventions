@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<svg baseProfile="full" height="300" version="1.1" viewBox="[0, 0, 300, 300]" width="300" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs/>
+	<path d="M223,86c0,-14.20443 -3,-27.85851 -3,-42c0,-0.84663 0.69113,-7.30887 0,-8c-2.58892,-2.58892 -121.44154,-10.27923 -134,-4c-0.16514,0.08257 0,2.73394 0,3c0,16.21033 10,31.59458 10,48c0,1 -0.70711,2.29289 0,3c3.66546,3.66546 53.32202,3 62,3c21.27994,0 41.99135,0 62,0" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M219,102c0.66667,0.33333 1.47295,0.47295 2,1c2.35702,2.35702 4.03943,5.30421 6,8c1.68655,2.319 3.36782,4.64241 5,7c2.16346,3.12499 25.31026,50.34487 14,56c-19.07929,9.53965 -101.12235,7.29255 -120,1c-20.11435,-6.70478 -0.06126,-27.07658 -12,-42c-3.23261,-4.04076 -24,-18.34275 -24,-22c0,-0.51528 29.08438,-2 31,-2c29.05334,0 57.58218,-4 86,-4c2.64958,0 5,-3.04974 5,1" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M221,77c8.83627,8.83627 18.24152,17.24152 27,26c0.18572,0.18572 2.01923,2.49038 1,3c-14.83819,7.41909 -17.56339,-18 -26,-18" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M94,77c0,0.33333 -0.06537,0.67314 0,1c0.26954,1.34768 0.31812,2.80671 1,4c0.70165,1.22788 2,2 3,3c0.66667,0.66667 1.33333,1.33333 2,2c1.66079,1.66079 20.91452,21.04274 13,25c-19.10709,9.55354 -20,-28.91981 -20,-38" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M92,88c0,32.46001 -7.55132,71.24338 -1,104c0.84984,4.24918 8.69317,0.47854 13,0" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M126,180c0,7.61487 -0.45829,49 4,49" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M239,182c0,16.33333 0,32.66667 0,49" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M207,187c0,11.66667 0,23.33333 0,35" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+</svg>

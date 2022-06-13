@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<svg baseProfile="full" height="300" version="1.1" viewBox="[0, 0, 300, 300]" width="300" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs/>
+	<path d="M70,29c-2.94517,0 8.78153,-4.06559 22,-6c21.11081,-3.08939 41.76103,-5.48293 63,-7c0.1972,-0.01409 33.51759,-3 21,-3" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M63,32c2.78768,-2.78768 2.97868,11.89875 3,12c2.41848,11.48779 4.40812,22.16237 5,34c0.11652,2.33042 0,9.33333 0,7" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M181,11c0,7.39293 15.5567,46.14777 1,51c-20.00614,6.66871 -47.49168,-1.45 -69,3c-2.0204,0.41801 -36.34743,7 -30,7" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M72,176c33.00711,-9.00194 67.95034,-10.43157 101,-19c12.41383,-3.2184 22.89504,-4.02624 35,-1c1.88525,0.47131 12.30667,-6 5,-6" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M65,176c4.46513,16.07447 6.34032,31.79286 10,48c1.25461,5.55611 6,21.696 6,16" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M221,152c-1.62072,0 -5.54744,-0.83205 -5,3c2.48347,17.38429 9.6091,50.46703 -7,65c-10.90464,9.54156 -53.95986,6.14245 -71,12c-4.60642,1.58346 -33.59323,19.49152 -40,14c-4.09918,-3.51358 -2.764,-4.236 -1,-6" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M75,73c-4.68285,-4.68285 0.17929,-0.22568 1,14c1.30609,22.63882 1.14489,45.33966 2,68c0.51938,13.76352 2,44.54578 2,33" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M112,61c-6.07741,15.19352 1.6846,32.68904 3,49c0.77705,9.63538 -0.56765,19.35001 0,29c0.01861,0.31631 0.1719,9.8281 3,7" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M141,66c0,-10.21751 -3,16.85523 -3,25c0,3.24124 -4.89865,104.49324 3,65" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M173,60c7.5059,-15.0118 -5.5928,114.96398 1,82" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M194,58c-6.08276,0 -3.40462,11.93071 -3,18c1.34799,20.21992 6.20572,40.34876 7,61c0.2517,6.54412 5,25.54896 5,19" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M102,243c0.75009,-1.50019 0.3045,28.609 4,36c0.4714,0.94281 2.25464,1.74536 3,1" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M207,220c0.15828,4.11527 1.64365,34.06171 1,42c-0.57145,7.04794 -2.27239,13.96647 -3,21c-0.3087,2.98408 0,12 0,9" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M188,222c0.33333,5.66667 0.76369,11.32846 1,17c0.13946,3.34705 -1,13.34996 -1,10" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M67,189c5.91733,-11.83466 0.27521,38.55984 0,42c-0.34658,4.33229 -0.54503,8.67775 -1,13c-0.24674,2.34407 -1,9.35702 -1,7" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+</svg>

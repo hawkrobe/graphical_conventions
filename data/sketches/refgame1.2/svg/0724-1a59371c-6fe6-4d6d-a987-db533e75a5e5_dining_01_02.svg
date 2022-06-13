@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<svg baseProfile="full" height="300" version="1.1" viewBox="[0, 0, 300, 300]" width="300" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs/>
+	<path d="M92,154c24.3896,0 48.055,-3.40367 72,-5c5.35908,-0.35727 6.56135,1.29243 10,-1c2.43463,-1.62309 10.63502,-7.36498 12,-6c12.96988,12.96988 12.56944,42.56944 21,51c0.4714,0.4714 0.4714,1.5286 0,2c-3.16006,3.16006 -21.65924,-0.86815 -26,0c-15.32045,3.06409 -30.54001,4.908 -46,8c-2.55795,0.51159 -12.41685,9.38877 -13,9c-12.41804,-8.27869 -16.7343,-48.7343 -28,-60" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M92,154c9.75273,9.75273 5,88.58346 5,108" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M127,213c5.56883,5.56883 3,46.34103 3,58" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M182,194c0,8.61638 0.87614,15.24772 -3,23" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M200,193c0,10.98337 5.19656,22.03442 4,34c-1.12192,11.21919 -4,21.67148 -4,33" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M122,148c0,-22.30172 2,-45.02234 2,-67" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M138,151c0,-14.63442 -3.65265,-67.34735 4,-75" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M156,147c0,-23.09522 -5,-46.4009 -5,-70" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M171,145c0,-22.2815 -8.17181,-50.48457 -1,-72" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M91,85c22.73922,0 47.17797,-12 67,-12c5.69987,0 23.42829,5.57171 27,2c4.99999,-4.99999 -4,-20.61314 -4,-26c0,-0.58645 0.26556,-3.91148 0,-4c-3.03665,-1.01222 -5.22796,1.44559 -8,2c-8.6964,1.73928 -88.20609,7.20609 -91,10c-3.71867,3.71867 9,26.67781 9,32" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+</svg>

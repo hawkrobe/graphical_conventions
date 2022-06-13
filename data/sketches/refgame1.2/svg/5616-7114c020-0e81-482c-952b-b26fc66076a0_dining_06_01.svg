@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<svg baseProfile="full" height="300" version="1.1" viewBox="[0, 0, 300, 300]" width="300" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs/>
+	<path d="M81,98c19.67921,14.05658 17.62477,33.93715 29,51c1.30744,1.96116 3.33333,-3.33333 5,-5c10.42452,-10.42452 13.88036,-10.28016 29,-17c5.69047,-2.5291 11.77282,-5 18,-5c2.68742,0 9.20185,1.4037 8,-1c-4.38432,-8.76863 -12.66989,-15.20447 -17,-24c-7.79196,-15.82743 -2.88524,-44.72131 -20,-49c-3.23381,-0.80845 -5.74758,3.54282 -8,6c-16.20613,17.67942 -33.86476,21.46619 -56,27" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M56,28c13.5646,0 14.84192,40.7354 16,50" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M79,36c1.89005,11.3403 3.60456,35.60456 12,44" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M91,30c2.99179,-5.98359 15,25.27166 15,30" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M106,19c0,7.31865 3.95414,29.95414 9,35" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M56,24c18.76465,-9.38233 49.40557,-12.59443 65,3" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M71,89c-7.51186,7.51186 -1.50313,30.25365 9,18c5.09372,-5.94268 7.44549,-34 -5,-34" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M66,104c0,7.07656 -7.96657,33.5571 19,22c14.81296,-6.34841 -3.76643,-22.79441 -11,-24c-1.36546,-0.22758 -3,-0.49662 -3,1" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M61,123c0,3.61924 -7.2238,25.36826 -6,27c10.93559,14.58079 38.60887,-12.39113 23,-28" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M59,153c0,4.98028 -1,10.6726 -1,16c0,1.33333 -0.8,5.06667 0,4c3.59559,-4.79412 6.05424,-20.94576 2,-25" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+</svg>

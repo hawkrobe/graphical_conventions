@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<svg baseProfile="full" height="300" version="1.1" viewBox="[0, 0, 300, 300]" width="300" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs/>
+	<path d="M77,59c0,-2.99366 39.20848,-8.18502 46,-9c27.15137,-3.25816 90.78603,-21.21397 112,0c8.86051,8.86051 -22.85236,19.32551 -26,20c-32.57171,6.97965 -71.0096,3 -104,3c-4.93998,0 -28,-5.06407 -28,-10" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M78,64c0,40.73268 -22.62426,77.87278 -35,115c-3.09876,9.29629 -18.56633,27.86735 -13,39c2.94484,5.88968 22.40032,1.79905 24,-3c10.417,-31.251 8.93415,-85.68862 56,-70c3.98842,1.32947 -3.76161,19.52322 -5,22c-10.21455,20.42909 -35,42.12658 -35,66" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M111,146c0,6.11823 23.85788,11.36275 28,12c14.29293,2.19891 71.29716,8.70284 82,-2c2.95384,-2.95384 3.38623,-8.96557 5,-13c0.94528,-2.36319 3.25913,-9.48174 2,-12c-22.55847,-45.11694 -119,-35.72233 -119,8" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M77,225c0,8.15887 14.63699,8.81735 19,3c15.01107,-20.01476 14.45727,-50.45727 30,-66" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M223,154c0,27.74746 0.40765,56.8153 13,82c1.49179,2.98358 9.07606,23.78479 13,23c53.82716,-10.76543 -23,-87.41583 -23,-103" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M191,158c0,18.70647 -10.93837,45.81511 -17,64c-0.06064,0.18193 -1.83658,9 -1,9c16.57076,0 27,-63.37859 27,-74" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M66,121c12.73793,0 36.39401,-2.60599 45,6" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M105,70c-8.52746,0 -20.56778,46 -24,46" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M219,69c0,17.34321 -9,34.3974 -9,51" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+</svg>

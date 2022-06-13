@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<svg baseProfile="full" height="300" version="1.1" viewBox="[0, 0, 300, 300]" width="300" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs/>
+	<path d="M65,158c2.09217,0 3.38991,2.16973 4,4c3.52571,10.57712 18.01603,31.00802 28,36c9.32049,4.66024 49.39384,-6 64,-6c5.47532,0 33.93939,3.12122 36,-1c1.7186,-3.43721 0,-11.11159 0,-15c0,-37.47284 -63.13174,-31.93798 -92,-34c-5.67462,-0.40533 -17.8279,-4.46884 -24,-2c-6.1344,2.45376 -14,16.21881 -14,22" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M73,145c0,-7.64918 33.18341,-3.4852 40,-5c9.2019,-2.04487 18.80525,-0.16105 28,-2c9.01171,-1.80234 10.50299,-17.3988 29,-10c9.82447,3.92979 14.42086,17.41411 19,26c3.18804,5.97757 22.79336,22.41328 19,30c-2.29675,4.5935 -26.98858,2 -31,2c-20.94344,0 -67.54423,16.72789 -87,7c-2.64693,-1.32346 -7.75153,-53 -21,-53" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M72,155c-12.06914,-6.03457 -0.20573,-54.20573 -13,-67" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M91,138c0,-20.66667 0,-41.33333 0,-62" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M124,138c0,-23.73475 15,-47.18587 15,-76" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M154,122c-2.77689,-11.10757 -2.13362,-27.03234 1,-38" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M15,54c0,10.31814 5.04319,33.06478 11,42c1.42394,2.13591 27.24746,-12.62373 30,-14c18.41935,-9.20968 48.01394,-7 68,-7c25.13439,0 30.51723,-3.96555 41,17c0.59945,1.19891 6.12741,2.12355 8,1c10.81463,-6.48878 13.7045,-31.8865 10,-43c-1.68411,-5.05234 -44.47678,-9 -52,-9c-48.27997,0 -92.8006,-9.1994 -129,27" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M102,201c0,10 0,20 0,30" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M65,174c5.81704,11.63408 5,35.31793 5,49" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+</svg>

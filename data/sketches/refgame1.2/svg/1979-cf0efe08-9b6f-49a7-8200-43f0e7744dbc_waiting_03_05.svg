@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<svg baseProfile="full" height="300" version="1.1" viewBox="[0, 0, 300, 300]" width="300" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs/>
+	<path d="M105,97c0,-48.22717 87.6886,-39.2873 80,3c-0.54975,3.02361 -1.02817,6.08452 -2,9c-0.10541,0.31623 -0.66667,0 -1,0c-19.4175,0 -39.65151,2 -60,2c-1.92732,0 -21,3 -21,3c0,0 4,-21.81282 4,-26" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M101,113c8.04584,8.04584 10,22.96585 10,34" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+</svg>

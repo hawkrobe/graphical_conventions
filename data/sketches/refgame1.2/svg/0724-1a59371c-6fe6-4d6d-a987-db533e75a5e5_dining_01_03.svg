@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<svg baseProfile="full" height="300" version="1.1" viewBox="[0, 0, 300, 300]" width="300" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs/>
+	<path d="M89,138c27.75658,0 55.85717,3 84,3c3.44583,0 25.27509,-4.72491 26,-4c0.84984,0.84984 1.49635,1.90877 2,3c2.66311,5.77006 25.39316,51.60684 21,56c-0.00688,0.00688 -39.86555,0 -45,0c-19.80209,0 -44.86831,2.78292 -64,-2c-8.08555,-2.02139 -7.09643,-33.48217 -8,-38c-0.84842,-4.24208 -5,-5.52125 -5,-11" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M93,145c0,27.92452 -4,56.57837 -4,85" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M120,197c0,21.32924 3,41.68965 3,63" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M189,200c0,7.45416 -3,14.73647 -3,22" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M222,192c0,26.66331 -2,53.24368 -2,80" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M120,136c1.74259,-24.39626 1.06695,-51.26778 7,-75" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M143,131c-9.67484,-25.79958 -11,-49.94653 -11,-77" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M155,137c0,-25.77025 -13,-55.6254 -13,-83" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M178,136c0,-21.73861 -1.75021,-47.00085 -7,-68" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M107,68c0,-2.6617 25.99306,-2.94406 27,-3c26.589,-1.47717 48.41121,5.90187 73,10c1.97279,0.3288 4.58579,1.41421 6,0c1.34114,-1.34114 -9.43276,-8.19641 -10,-9c-3.61796,-5.12544 -10.70209,-17.40418 -14,-24c-2.24102,-4.48205 -15.19253,-2 -20,-2c-7.47374,0 -87.76437,-1.61781 -93,1c-2.15641,1.07821 -1.25046,4.99629 -1,7c2.79117,22.32933 17.18013,20 35,20" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+</svg>

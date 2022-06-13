@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<svg baseProfile="full" height="300" version="1.1" viewBox="[0, 0, 300, 300]" width="300" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs/>
+	<path d="M27,76c13.30892,13.30892 25.44613,33.16919 36,49c0.76236,1.14354 -0.37437,4 1,4c7.24018,0 22.38583,-15.19292 30,-19c32.59069,-16.29535 64.79878,-31.14468 96,-51c1.25766,-0.80033 2.71235,-1.24887 4,-2c9.58015,-5.58842 20.08759,-9.54379 29,-14c0.24935,-0.12468 4,0 4,0c0,0 -9.69222,-1.9316 -10,-2c-20.67572,-4.5946 -38.49884,-13.24942 -56,-22c-3.15675,-1.57838 -9.51728,-8 -12,-8c-9.47055,0 -20.57757,19.94654 -29,25c-13.66738,8.20043 -77.69661,41 -89,41" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M109,180c7.49982,3.74991 21.27452,23 27,23" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M132,159c11.95484,7.96989 22.78191,17.02553 34,26c1.75409,1.40327 5.53363,8 7,8" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M169,137c5.83523,4.66818 34,24.80633 34,33" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M208,99c5.75468,4.42668 52,38.84101 52,48" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+</svg>

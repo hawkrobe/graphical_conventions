@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<svg baseProfile="full" height="300" version="1.1" viewBox="[0, 0, 300, 300]" width="300" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs/>
+	<path d="M73,121c-4.16605,-12.49814 -10.98655,-73.02691 -5,-85c2.14194,-4.28388 17.80375,-7.60125 22,-9c38.40963,-12.80321 42.63142,-24.54659 84,-15c12.70436,2.93177 24.74011,5.48023 31,18c6.04269,12.08539 28.30212,78.13192 15,87c-24.39679,16.26452 -84.54847,15 -114,15c-9.55483,0 -34,2.81513 -34,-9" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M72,129c0,-2.66667 0,0 0,0c4.70858,9.41716 9.83739,18.78319 16,27c5.9993,7.99907 13.46742,11.46742 20,18c11.96757,11.96757 18.44819,33.18394 40,26c12.93572,-4.31191 96.19402,-39.38804 99,-45c5.52847,-11.05693 -17.77944,-32.77944 -24,-39c-1.71229,-1.71229 -2.96231,-3.03769 -5,-1" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M177,13c41.07555,10.26889 50.96592,49.82961 58,85c2.1688,10.84401 0.19428,28.38856 5,38c0.99852,1.99705 2,20.48588 2,13" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M60,43c4.43893,2.95929 8.18697,0.86088 13,3c38.02823,16.90144 55.12488,46.74836 58,87c1.20689,16.89652 6.39553,34.23131 4,51c-0.67525,4.72678 0,10.19942 0,15c0,2.66667 0,10.66667 0,8c0,-2 0,-4 0,-6" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M69,127c6.62369,29.8066 17.61499,125.69251 -13,141" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M131,199c12.5545,37.66351 -6,41.34863 -6,70c0,1.65607 1.20325,8 -1,8" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M234,161c-9.79153,4.89576 13.86549,73.13904 20,82c0.56549,0.81682 16,26.12245 16,20" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M212,175c-7.38267,7.38267 -4.34375,49.65625 2,56" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+</svg>

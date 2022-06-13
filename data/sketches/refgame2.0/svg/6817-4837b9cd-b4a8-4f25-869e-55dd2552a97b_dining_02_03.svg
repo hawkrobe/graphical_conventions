@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<svg baseProfile="full" height="300" version="1.1" viewBox="[0, 0, 300, 300]" width="300" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs/>
+	<path d="M160,127c-9.08312,-18.16624 -95.41067,0.17867 -83,25c3.97688,7.95375 14.43006,8.27905 22,9c7.72515,0.73573 19.18594,4.95352 27,3c13.77052,-3.44263 22.4037,-12.13457 34,-16c11.97357,-3.99119 3.3713,-32 -7,-32" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M80,46c-1.35498,0 -12.63818,9.68091 -8,12c12.1815,6.09075 90.01715,2.94854 93,-6c1.45941,-4.37823 -1.02268,-7.00567 -5,-8c-2.4041,-0.60102 -45.53728,-1.48757 -50,0c-5.2596,1.7532 -5.00111,7.33407 -9,10c-4.0433,2.69553 -19.56303,-5 -25,-5" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M81,70c0,12.86183 -2,26.37466 -2,39" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M109,75c1.11526,5.5763 1.89147,41.55427 13,36" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M143,75c0,1.87023 -1.57567,18 1,18" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M150,70c1.81613,4.843 5.54987,27 11,27" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M167,89c0,6.4441 1.74127,12.70634 3,19" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M78,176c-3.07767,40.00969 -6,79.80923 -6,120" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M109,200c0,17.33333 0,34.66667 0,52c0,4.51423 -1.7849,7 2,7" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M137,130c0,35.18242 11.37987,62.86401 21,96c0.62344,2.1474 0.76393,6 3,6" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M167,112c-2.67548,33.44355 -2.97638,65.52256 2,99c1.72805,11.62506 12,33.36321 12,47" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+</svg>

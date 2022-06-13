@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<svg baseProfile="full" height="300" version="1.1" viewBox="[0, 0, 300, 300]" width="300" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs/>
+	<path d="M56,179c11.96795,5.98397 24.29954,51.53537 33,50c18.43097,-3.25252 36.61302,-7.57917 55,-11c25.00067,-4.65129 44.73211,-4 70,-4c0.33333,0 -0.8151,0.27735 -1,0c-3.04569,-4.56853 -2.97017,-12.85087 -4,-18c-2.20129,-11.00645 -3.57737,-24.73211 -7,-35c-0.73786,-2.21359 -4.68713,-0.30838 -7,0c-31.07209,4.14295 -61.80414,11.68129 -93,15c-5.3778,0.57211 -54,-1.54906 -54,6" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M83,226c0,8.66667 0,17.33333 0,26" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M56,176c-12.35875,0 -11.13496,36.07967 -12,43c-0.21786,1.7429 0.97299,4 -1,4" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M210,211c0,3.93526 -4,36.8864 -4,25" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M185,211c0,6.71636 1,28.71741 1,28" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M74,176c0,-21.83521 0,-44.13645 0,-66" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M107,169c0,-15.89468 -11.3889,-37.2222 -3,-54" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M151,164c-7.19943,0 -5.22811,-43.31567 -3,-50" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M183,156c0,-14.99809 1,-29.93975 1,-45c0,-0.26606 0.16514,-2.91743 0,-3c-4.5408,-2.2704 -22.8014,0.80007 -27,1c-33.39079,1.59004 -65.68614,7 -99,7c-4.99247,0 -10.28634,-1.42733 -7,-8c1.0003,-2.0006 3.17495,-6.17495 4,-7c3.61464,-3.61464 28.27425,-1.94983 33,-3c14.30905,-3.17979 104.88321,-14.05839 117,-8c3.4507,1.72535 1.87333,5.38001 1,8c-2.47637,7.42912 -11.73343,10 -20,10" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+</svg>

@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<svg baseProfile="full" height="300" version="1.1" viewBox="[0, 0, 300, 300]" width="300" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs/>
+	<path d="M64,53c14.33884,14.33884 17.67492,-21.51238 20,-25c2.97237,-4.45855 13.94573,-9.31524 19,-11c27.00974,-9.00325 51.32532,-22.93494 81,-17c4.97264,0.99453 10.56059,19.28029 18,23c7.82417,3.91209 23.47161,-4.05679 28,5c6.33402,12.66805 -24.60989,20 -32,20c-13.81221,0 -24.87851,7.71963 -38,11c-19.00091,4.75023 -38.2209,0.97591 -57,5c-11.48125,2.46027 -20.66714,6 -33,6" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M101,173c-1.64828,-0.54943 -10.13482,-0.13482 -11,-1c-31.47712,-31.47712 89.06892,-66.43842 107,-69c6.07607,-0.86801 29.47002,8.41007 32,16c5.59974,16.79923 -18.29173,15.8752 -22,27c-0.874,2.622 0.60484,4.04194 3,5c3.78815,1.51526 10.07642,0.22927 12,6c1.82745,5.48234 1.98669,27.67554 -3,31c-28.05203,18.70135 -77.12328,42.98435 -102,11c-5.73629,-7.37523 -13,-9.13017 -13,-21" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M85,77c0,-14.1856 -1.45448,3.55872 0,10c3.76774,16.68573 6.94645,35.85721 13,52c0.48257,1.28686 1,-2.62563 1,-4" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M112,65c-6.51312,-6.51312 14.28682,47.66838 19,55c6.47851,10.07769 4,1.51613 4,-4" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M128,62c0,-6.37926 22,51.62374 22,38" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M156,57c2.92276,-2.92276 13.17939,59.56487 17,29" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M182,48c13.41641,0 12,24 18,36c3.77493,7.54986 6,-3.39975 6,-5" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M213,38c1,14.66667 1.59296,29.36677 3,44c0.30098,3.13022 5,11.14466 5,8" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+</svg>

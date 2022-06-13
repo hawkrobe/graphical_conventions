@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<svg baseProfile="full" height="300" version="1.1" viewBox="[0, 0, 300, 300]" width="300" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs/>
+	<path d="M116,45c7.06211,14.12422 7.06785,28.22081 9,44c1.1459,9.35819 2.85869,18.64124 4,28c0.56636,4.64415 1,18.67856 1,14c0,-1.66667 0,-3.33333 0,-5" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M133,44c6.76141,18.03043 10.4995,37.9962 13,57c0.40061,3.04461 0,39.53067 0,28" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M157,45c7.63367,22.901 2.36462,59.75882 4,82c0.64302,8.74502 4,34.76863 4,26" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M179,56c0.33333,0.33333 0.94153,0.53224 1,1c1.72243,13.77947 -0.88607,28.11822 0,42c0.72474,11.35426 1.92132,22.67388 3,34c0.25479,2.67531 -0.20185,10.4037 1,8c1.93793,-3.87585 0,-8.66667 0,-13" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M93,46c32.4959,0 64.84775,-9.51364 97,-14c9.52827,-1.32953 28,2.62058 28,-7" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M122,136c39.62066,0 62.71744,-54.06933 76,15c1.54322,8.02473 8.42445,16.58037 5,24c-4.61901,10.00787 -12.16955,11.55934 -22,15c-41.06116,14.37141 -35.26895,-0.4287 -45,-28c-1.05521,-2.98976 -1.26598,-25 -8,-25" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M142,186c1.66667,0 2.63845,2.37302 3,4c5.42897,24.43037 7.55801,50.52045 14,75c0.84831,3.22358 4.28501,-5.14169 6,-8" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M196,179c5.11634,12.79085 14.34029,80.04177 8,42" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M120,130c-5.43042,21.72168 -5,40.71888 -5,63c0,12.16072 0.07655,5.69381 2,-2" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+	<path d="M182,129c0,14.9366 -0.72218,26.92205 -4,42c-0.35405,1.62863 -3,5.66667 -3,4" fill="none" stroke="black" stroke-linecap="round" stroke-width="5"/>
+</svg>
