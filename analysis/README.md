@@ -17,9 +17,9 @@ While we have provided all pre-processed data necessary for directly reproducing
 
 ## Feature extraction
 
-The most computationally-intensive pre-processing step is to extract high-dimensional visual features from the sketch pngs (available in `../data/features`). 
+The most computationally intensive pre-processing step is to extract VGG-19 feature-vector embeddings for each sketch image. The sketches used as input to this step can be found in `../data/sketches/` and the features are available in `../data/features`. 
 
-On a machine with GPU access and cuda version > 10.2, please run
+On a machine with PyTorch installed, GPU access, and CUDA version > 10.2, please run:
 
 ```
 python extract_features.py --data='../../data/diagnosticity/sketches/refgame1.2/png' --layer_ind=6 --data_type='sketch' --spatial_avg=True --crop_sketch=False
