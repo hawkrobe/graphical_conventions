@@ -1,5 +1,5 @@
 ---
-title: "analyze_refgame_dataframe"
+title: "analyze_graphical_conventions_data"
 output: html_document
 ---
 
@@ -20,18 +20,18 @@ library(here)
 ```{r}
 # '1.2' is our original, '2.0' is the internal replication with no listener interruptions & balanced contexts'
 version = '1.2'
-prefix = '../data/experiment/graphical_conventions'
+prefix = paste0('../data/experiment/refgame',version,'/')
 path = ifelse(version == '1.2', 'run3run4.csv', 'run5_submitButton.csv')
 
-d <- paste0(prefix, '_group_data_', path) %>%
+d <- paste0(prefix, 'graphical_conventions_group_data_', path) %>%
   read_csv() %>% 
   select(-png)
 
-d.bis.drawDuration.raw <- paste0(prefix, '_bis_drawDuration_', path) %>%
+d.bis.drawDuration.raw <- paste0(prefix, 'graphical_conventions_bis_drawDuration_', path) %>%
   read_csv() %>% 
   select(-X1)
 
-d.bis.numStrokes <- paste0(prefix, '_bis_numStrokes_', path) %>% 
+d.bis.numStrokes <- paste0(prefix, 'graphical_conventions_bis_numStrokes_', path) %>% 
   read_csv() %>%
   select(-X1)
 ```
@@ -302,7 +302,7 @@ empirical.within <- compute_within_convergence(M_mat, F_mat_raw_nonorm,
                                                'empirical', method = 'cor', nboot = 1000)
 ```
 
-Make Fig. 5C
+Make Fig. 4B
 
 ```{r}
 ggplot(empirical.within, aes(x = `rep diff`, y = empirical_stat, 
