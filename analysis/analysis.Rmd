@@ -91,7 +91,9 @@ d.bis.drawDuration %>%
           element_line(size=1), 
           element_rect(size=2, color="#00000"))
 
-prefix = '../../graphical_conventions_latex/natcomms2020/figures/refgame_BIS_timeseries'
+
+
+prefix = paste0('plots/refgame', version, '/refgame_BIS_timeseries')
 ggsave(paste0(prefix, version, '.pdf'), width=14, height = 10, units='cm')
 ```
 
@@ -160,7 +162,8 @@ d %>%
     theme(legend.position = c(0.5, 0.8), text = element_text(size=18), 
           element_line(size=1), element_rect(size=2, color="#00000")) 
   
-prefix = '../../graphical_conventions_latex/natcomms2020/figures/num_strokes'
+
+prefix = paste0('plots/refgame', version, '/num_strokes')
 ggsave(paste0(prefix, version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
 ```
 
@@ -263,13 +266,13 @@ To measure within-interaction convergence on sketch features, first import pre-p
 
 ```{r}
 library(reticulate)
-prefix <- paste0('../../data/features/refgame', version)
+prefix <- paste0('../data/features/refgame', version)
 np <- import("numpy")
 F_mat_raw_nonorm = np$load(paste0(prefix, '/FEATURES_vgg_FC6.npy'))
 ```
 
 ```{r}
-source('./helpers.R')
+source('helpers/helpers.R')
 library(broom)
 detach('package:lmerTest')
 M_mat = read_csv(paste0(prefix, '/METADATA.csv')) %>%
@@ -325,7 +328,8 @@ ggplot(empirical.within, aes(x = `rep diff`, y = empirical_stat,
     theme(legend.position = c(0.5, 0.8), text = element_text(size=18), 
           element_line(size=1), element_rect(size=2, color="#00000"))
 
-prefix = '../../results/plots/within'
+
+prefix = paste0('plots/refgame', version, '/within')
 ggsave(paste0(prefix, version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
 ```
 
@@ -334,7 +338,7 @@ ggsave(paste0(prefix, version, '.pdf'), height = 10, width = 7, units = 'cm', us
 ### load in data from control conditions
 
 ```{r}
-d.recog <- read_csv(paste0('../data/experiment/graphical_conventions_recog_data_bis_', path)) %>%
+d.recog <- read_csv(paste0('../data/experiment/refgame', version, '/graphical_conventions_recog_data_bis_', path)) %>%
   mutate(version = factor(version, levels = c("refgame","yoked","scrambled40"), labels = c("communication", "yoked", "shuffled" ))) 
 ```
 
@@ -379,7 +383,7 @@ d.recog.boot %>%
     theme(legend.position = c(0.18, 0.8), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000")) +
     theme(legend.text=element_text(size=12), legend.background = element_rect(fill="transparent"))
 
-ggsave('../../results/plots/recog_BIS_timeseries.pdf', width=14, height = 10, units='cm')
+ggsave(paste0('plots/refgame', version, '/recog_BIS_timeseries.pdf'), width=14, height = 10, units='cm')
 ```
 
 mixed-effects modeling of BIS (balancing accuracy vs. drawDuration) from communication vs. yoked experiments
@@ -427,7 +431,7 @@ Comparing communication and yoked accuracies
 d.acc %>% 
   filter(version %in% c('communication','yoked')) %>%
   lmer(accuracy ~ version + (1 | gameID),
-      data = .)) %>%
+      data = .) %>%
   summary()
 ```
 
@@ -550,7 +554,7 @@ d.diagnosticity %>%
     theme_few() +
     theme(aspect.ratio = 1)
 
-ggsave('../../graphical_conventions_latex/nhb2020/figures/diagnosticity_change.pdf',
+ggsave(paste0('plots/refgame', version, '/diagnosticity_change.pdf'),
        width = 4, height = 4)
 ```
 
@@ -802,7 +806,7 @@ ggplot(d.toplot.drift, aes(x = `rep diff`, y = empirical_stat,
     theme(legend.position = c(0.5, 0.8), text = element_text(size=18), 
           element_line(size=1), element_rect(size=2, color="#00000"))
 
-ggsave('../../graphical_conventions_latex/natcomms2020/figures/source/drift.pdf', height = 10, width = 7, units = 'cm', useDingbats = F)
+ggsave(paste0('plots/refgame', version, '/drift.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
 ```
 
 Perform variant of the above analysis, except substitute in a different permuted baseline where drawings are from the same sketcher, but of different objects across successive repetitions
