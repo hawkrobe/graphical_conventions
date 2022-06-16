@@ -392,7 +392,7 @@ mixed-effects modeling of BIS (balancing accuracy vs. drawDuration) from communi
 library(lmerTest)
 d.recog %>% 
   filter(version %in% c('communication', 'yoked')) %>%
-  lmer(bis_relative ~ version * repetition + (1 + version * repetition | orig_gameID), 
+  lmer(bis_relative ~ version * repetition + (1 | orig_gameID), ## used to have more maximal random effects structure (1 + version * repetition | orig_gameID), but this led to singular fit
        data = .) %>%
   summary()
 ```
@@ -410,7 +410,7 @@ d.recog %>%
 ### Analysis of change in raw accuracy & RT across all three groups: communication, yoked, shuffled
 
 ```{r}
-d.acc <- read_csv(paste0('../../data/experiment/graphical_conventions_recog_data_', path)) %>%
+d.acc <- read_csv(paste0('../data/experiment/refgame',version, '/graphical_conventions_recog_data_', path)) %>%
   mutate(version = factor(version, levels = c("refgame","yoked","scrambled40"), labels = c("communication", "yoked", "shuffled" ))) %>%
   filter(condition == 'repeated') %>%
   group_by(version,gameID,repetition) %>%
@@ -503,7 +503,7 @@ ggplot(d.toplot, aes(x = repetition, y = empirical_stat, group = sample_id,
   theme(legend.position = c(0.5, 0.8), text = element_text(size=18), 
         element_line(size=1), element_rect(size=2, color="#00000"))
 
-prefix = '../../results/plots/across'
+prefix = paste0('plots/refgame',version, '/across')
 ggsave(paste0(prefix, version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
 ```
 
