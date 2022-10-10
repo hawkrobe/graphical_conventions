@@ -1,5 +1,5 @@
 ---
-title: "analyze_refgame_dataframe"
+title: "analyze_graphical_conventions_data"
 output: html_document
 ---
 
@@ -18,20 +18,19 @@ library(here)
 # Import group data
 
 ```{r}
-# '1.2' is our original, '2.0' is the internal replication with no listener interruptions & balanced contexts'
-version = '2.0'
-prefix = here(paste0('data/experiment/', ifelse(version == '1.2', 'refgame1.2/graphical_conventions', 'refgame2.0/graphical_conventions')))
+version = '1.2'
+prefix = paste0('../data/experiment/refgame',version,'/')
 path = ifelse(version == '1.2', 'run3run4.csv', 'run5_submitButton.csv')
 
-d <- paste0(prefix, '_group_data_', path) %>%
+d <- paste0(prefix, 'graphical_conventions_group_data_', path) %>%
   read_csv() %>% 
   select(-png)
 
-d.bis.drawDuration.raw <- paste0(prefix, '_bis_drawDuration_', path) %>%
+d.bis.drawDuration.raw <- paste0(prefix, 'graphical_conventions_bis_drawDuration_', path) %>%
   read_csv() %>% 
   select(-`...1`)
 
-d.bis.numStrokes <- paste0(prefix, '_bis_numStrokes_', path) %>% 
+d.bis.numStrokes <- paste0(prefix, 'graphical_conventions_bis_numStrokes_', path) %>% 
   read_csv() %>%
   select(-`...1`)
 ```
@@ -88,7 +87,9 @@ d.bis.drawDuration %>%
           element_line(size=1), 
           element_rect(size=2, color="#00000"))
 
-prefix = '../../../graphical_conventions_latex/nhb2020/figures/refgame_BIS_timeseries'
+
+
+prefix = paste0('plots/refgame', version, '/refgame_BIS_timeseries')
 ggsave(paste0(prefix, version, '.pdf'), width=14, height = 10, units='cm')
 ```
 
@@ -157,7 +158,8 @@ d %>%
     theme(legend.position = c(0.5, 0.8), text = element_text(size=18), 
           element_line(size=1), element_rect(size=2, color="#00000")) 
   
-prefix = '../../../graphical_conventions_latex/nhb2020/figures/num_strokes'
+
+prefix = paste0('plots/refgame', version, '/num_strokes')
 ggsave(paste0(prefix, version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
 ```
 
@@ -256,17 +258,17 @@ d %>%
   tidyboot_mean(diff) 
 ```
 
-To measure within-interaction convergence on sketch features, first import pre-processed matrices geneated in ipynb...
+To measure within-interaction convergence on sketch features, first import pre-processed matrices generated in ipynb...
 
 ```{r}
 library(reticulate)
-prefix <- paste0('../../data/features/refgame', version)
+prefix <- paste0('../data/features/refgame', version)
 np <- import("numpy")
 F_mat_raw_nonorm = np$load(paste0(prefix, '/FEATURES_vgg_FC6.npy'))
 ```
 
 ```{r}
-source('./helpers.R')
+source('helpers/helpers.R')
 library(broom)
 detach('package:lmerTest')
 M_mat = read_csv(paste0(prefix, '/METADATA.csv')) %>%
@@ -299,7 +301,7 @@ empirical.within <- compute_within_convergence(M_mat, F_mat_raw_nonorm,
                                                'empirical', method = 'cor', nboot = 1000)
 ```
 
-Make Fig. 5C
+Make Fig. 4B
 
 ```{r}
 ggplot(empirical.within, aes(x = `rep diff`, y = empirical_stat, 
@@ -322,7 +324,8 @@ ggplot(empirical.within, aes(x = `rep diff`, y = empirical_stat,
     theme(legend.position = c(0.5, 0.8), text = element_text(size=18), 
           element_line(size=1), element_rect(size=2, color="#00000"))
 
-prefix = '../../results/plots/within'
+
+prefix = paste0('plots/refgame', version, '/within')
 ggsave(paste0(prefix, version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
 ```
 
@@ -372,7 +375,7 @@ d.recog.boot %>%
     theme(legend.position = c(0.18, 0.8), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000")) +
     theme(legend.text=element_text(size=12), legend.background = element_rect(fill="transparent"))
 
-ggsave('../../results/plots/recog_BIS_timeseries.pdf', width=14, height = 10, units='cm')
+ggsave(paste0('plots/refgame', version, '/recog_BIS_timeseries.pdf'), width=14, height = 10, units='cm')
 ```
 
 mixed-effects modeling of BIS (balancing accuracy vs. drawDuration) from communication vs. yoked experiments
@@ -381,7 +384,7 @@ mixed-effects modeling of BIS (balancing accuracy vs. drawDuration) from communi
 library(lmerTest)
 d.recog %>% 
   filter(version %in% c('communication', 'yoked')) %>%
-  lmer(bis_relative ~ version * repetition + (1 + version * repetition | orig_gameID), 
+  lmer(bis_relative ~ version * repetition + (1 | orig_gameID), ## used to have more maximal random effects structure (1 + version * repetition | orig_gameID), but this led to singular fit
        data = .) %>%
   summary()
 ```
@@ -508,7 +511,7 @@ ggplot(d.toplot, aes(x = repetition, y = empirical_stat, group = sample_id,
   theme(legend.position = c(0.5, 0.8), text = element_text(size=18), 
         element_line(size=1), element_rect(size=2, color="#00000"))
 
-prefix = '../../results/plots/across'
+prefix = paste0('plots/refgame',version, '/across')
 ggsave(paste0(prefix, version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
 ```
 
@@ -563,7 +566,7 @@ d.diagnosticity %>%
     theme_few() +
     theme(aspect.ratio = 1)
 
-ggsave('../../graphical_conventions_latex/nhb2020/figures/diagnosticity_change.pdf',
+ggsave(paste0('plots/refgame', version, '/diagnosticity_change.pdf'),
        width = 4, height = 4)
 ```
 
@@ -771,6 +774,8 @@ cat('CI for drift analysis=', sort(permuted_tstats.drift)[25], sort(permuted_tst
 cat('true for drift analysis=', (tidy(true_lmer.drift.out, effects = 'fixed') %>% filter(term == 'poly(rep2, 2)1'))$statistic)
 ```
 
+Plot change in similarity between successive drawings of same object (by same sketcher) against permuted baseline measuring the similarity between drawings of the same object across successive repetitions, but produced by different sketchers ("drift") 
+
 ```{r}
 num_permutations <- 1000
 empirical.drift <- compute_within_drift(M_mat, F_mat_raw_nonorm, 'empirical', method = 'cor', nboot = 1000)
@@ -813,8 +818,54 @@ ggplot(d.toplot.drift, aes(x = `rep diff`, y = empirical_stat,
     theme(legend.position = c(0.5, 0.8), text = element_text(size=18), 
           element_line(size=1), element_rect(size=2, color="#00000"))
 
-ggsave('../../../graphical_conventions_latex/cogsci19/figures/source/drift.pdf', height = 10, width = 7, units = 'cm', useDingbats = F)
+ggsave(paste0('plots/refgame', version, '/drift.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
 ```
+
+Perform variant of the above analysis, except substitute in a different permuted baseline where drawings are from the same sketcher, but of different objects across successive repetitions
+
+```{r}
+num_permutations <- 1000
+empirical.drift <- compute_within_drift(M_mat, F_mat_raw_nonorm, 'empirical', method = 'cor', nboot = 1000)
+baselines.drift.sameSketcher <- map_dfr(seq_len(num_permutations), ~M_mat %>%
+  group_by(gameID, repetition) %>%
+  mutate(gameID = sample(target)) %>% # shuffle targets within gameID-repetition
+  ungroup() %>%
+  arrange(gameID, target, repetition) %>%
+  compute_within_drift(F_mat_raw_nonorm, .x, method = 'cor')) # this passes in the iteration number
+```
+
+```{r}
+d.toplot.drift <- baselines.drift.sameSketcher %>%
+  group_by(`rep diff`) %>%
+  summarize(`ci_upper`=quantile(empirical_stat, probs=0.975),
+            `ci_lower`=quantile(empirical_stat, probs=0.025),
+            `empirical_stat`=quantile(empirical_stat, probs=0.5)) %>%
+  mutate(sample_id = 'baseline') %>%
+  rbind(empirical.drift %>% select(-n, -mean)) 
+
+ggplot(d.toplot.drift, aes(x = `rep diff`, y = empirical_stat, 
+             fill = sample_id, color = sample_id, group = sample_id)) +
+    geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.5, color = NA,
+                d.toplot.drift %>% filter(sample_id == 'baseline')) +
+    geom_line(size = 1, linetype = 'dashed', data = d.toplot.drift %>% filter(sample_id == 'baseline')) +
+    geom_point(size = 2, data = d.toplot.drift %>% filter(sample_id == 'empirical')) +
+    geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0,
+                  data = d.toplot.drift %>% filter(sample_id == 'empirical')) +
+    geom_smooth(method = 'lm', formula = y ~ poly(x, 2), se = F,
+                data = d.toplot.drift %>% filter(sample_id == 'empirical')) +
+    scale_color_manual(values=c("#d07e93", "#163c4e")) + 
+    scale_fill_manual(values=c("#d07e93", "#163c4e")) + 
+    scale_x_discrete(labels = c('(1,2)','(1,3)', '(1,4)', '(1,5)', '(1,6)' ,'(1,7)','(1,8)')) +
+    ylim(.5, .8) +
+    ylab('correlation') +
+    ggtitle('drift from initial') +
+    theme_few() +
+    xlab('repetition pair') +
+    guides(color = F, fill = F) +
+    theme(legend.position = c(0.5, 0.8), text = element_text(size=18), 
+          element_line(size=1), element_rect(size=2, color="#00000"))
+```
+
 
 ## Visualize effects of different pre-processing steps and distance metrics
 
@@ -844,7 +895,7 @@ rbind(compute_across_similarity(filtered_M, F_mat_raw_nonorm, 'raw_euclid_nonorm
         theme_few() +
         facet_grid(dist ~ PCA, scales = 'free') +
         theme(aspect.ratio = 2)
-ggsave('unfiltered.pdf')
+#ggsave('unfiltered.pdf')
 ```
 
 How well are these different steps correlated?
@@ -875,5 +926,5 @@ M_mat %>%
     facet_wrap(~ target) +
     theme_few()
 
-ggsave('by_target_gamepair.pdf')
+#ggsave('by_target_gamepair.pdf')
 ```

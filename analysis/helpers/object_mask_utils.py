@@ -306,7 +306,7 @@ def render_target_map_gallery(target_map_dir, target_gallery_dir):
     output: 1 row x 2 column gallery images in target_gallery_dir
     '''         
     ## construct lists of paths to each diagnosticity map and single object
-    url_stem = 'https://s3.amazonaws.com/shapenet-graphical-conventions/{}.png'
+    url_stem = 'https://shapenet-graphical-conventions.s3.amazonaws.com/{}.png'
     maps = [os.path.abspath(os.path.join(target_map_dir,fname)) for fname in os.listdir(target_map_dir)]
     fnames = os.listdir(target_map_dir)
     targets = [url_stem.format(i.split('.')[0]) for i in fnames]
@@ -319,7 +319,10 @@ def render_target_map_gallery(target_map_dir, target_gallery_dir):
         plt.imshow(Image.open(maps[ind]))
         clean_imshow(p,title='diagnosticity map')
         p = plt.subplot(122)
-        plt.imshow(retrieve_image_by_url(targets[ind]))
+        obj_name_gc = targets[ind].split('/')[-1].split('.')[0]
+        obj_name_shapenet = GC2SHAPENET[obj_name_gc]
+        target_url = url_stem.format(obj_name_shapenet) 
+        plt.imshow(retrieve_image_by_url(target_url))
         clean_imshow(p,title='target')
         plt.title('target')
         out_path = os.path.join(target_gallery_dir, fname)    
