@@ -19,18 +19,18 @@ library(here)
 
 ```{r}
 version = '1.2'
-prefix = paste0('../data/experiment/refgame',version,'/')
+prefix = here(paste0('data/experiment/refgame', version, '/graphical_conventions'))
 path = ifelse(version == '1.2', 'run3run4.csv', 'run5_submitButton.csv')
 
-d <- paste0(prefix, 'graphical_conventions_group_data_', path) %>%
+d <- paste0(prefix, '_group_data_', path) %>%
   read_csv() %>% 
   select(-png)
 
-d.bis.drawDuration.raw <- paste0(prefix, 'graphical_conventions_bis_drawDuration_', path) %>%
+d.bis.drawDuration.raw <- paste0(prefix, '_bis_drawDuration_', path) %>%
   read_csv() %>% 
   select(-`...1`)
 
-d.bis.numStrokes <- paste0(prefix, 'graphical_conventions_bis_numStrokes_', path) %>% 
+d.bis.numStrokes <- paste0(prefix, '_bis_numStrokes_', path) %>% 
   read_csv() %>%
   select(-`...1`)
 ```
@@ -65,12 +65,16 @@ d.bis.drawDuration <- d.bis.drawDuration.raw %>%
 
 ## Section 2.1: Participants learn to communicate more effectively
 
-To get 95% CIs for Fig. 1, we bootstrap re-sample within each condition & repetition
+### Make Fig. 3A
+
+We want 95% CIs to be computed over participant means, so we bootstrap re-sample at the level of participants
 
 ```{r}
 d.bis.drawDuration %>% 
+  group_by(gameID, condition, repetition_1) %>%
+  summarize(bis_relative = mean(bis_relative)) %>%
   group_by(condition, repetition_1) %>% 
-  tidyboot_mean(bis_relative) %>%
+  tidyboot_mean(bis_relative, nboot=100) %>%
   ggplot(aes(x=repetition_1, y=empirical_stat, color=condition, fill=condition)) + 
     geom_line(size=1.5)+
     geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha=.25, color=NA,
@@ -87,13 +91,11 @@ d.bis.drawDuration %>%
           element_line(size=1), 
           element_rect(size=2, color="#00000"))
 
-
-
-prefix = paste0('plots/refgame', version, '/refgame_BIS_timeseries')
+prefix = here('../graphical_conventions_latex/natcomms2020/figures/refgame_BIS_timeseries')
 ggsave(paste0(prefix, version, '.pdf'), width=14, height = 10, units='cm')
 ```
 
-Simple effect of BIS in repetition condition
+### Simple effect of BIS in repetition condition
 
 ```{r}
 d.bis.drawDuration %>%
@@ -105,7 +107,7 @@ d.bis.drawDuration %>%
   summary()
 ```
 
-Simple effect of (only) pure draw duration in repetition condition
+### Simple effect of RT in repetition condition
 
 ```{r}
 d %>%
@@ -117,7 +119,7 @@ d %>%
   summary()
 ```
 
-Simple effect of (only) accuracy in repetition condition
+### Simple effect of (only) accuracy in repetition condition
 
 ```{r}
 d %>%
@@ -130,7 +132,7 @@ d %>%
   summary()
 ```
 
-Simple effect of number of strokes in repeated condition.
+### Simple effect of number of strokes in repeated condition.
 
 ```{r}
 d %>% 
@@ -140,7 +142,9 @@ d %>%
   summary()
 ```
 
-Figure showing number of strokes over time in repeated condition
+### Figure 4A 
+
+(number of strokes over time in repeated condition)
 
 ```{r}
 d %>%
@@ -165,7 +169,9 @@ ggsave(paste0(prefix, version, '.pdf'), height = 10, width = 7, units = 'cm', us
 
 ## Section 2.2: Object-specificity
 
-No raw accuracy differences between condition in pre phase 
+### Check accuracies
+
+No differences between condition in pre phase.
 
 ```{r}
 d %>%
@@ -180,6 +186,8 @@ d %>%
   group_by(metric) %>%
   tidyboot_mean(value)
 ```
+
+### Model
 
 Now we run a mixed-effects model to evaluate an interaction in BIS changes across conditions. The maximal model for the interaction between repetition and condition is
 
@@ -199,7 +207,7 @@ d.bis.drawDuration %>%
   summary()
 ```
 
-As a sanity check, we double-check this with another optimization algorithm in lme.
+As a sanity check, we double-check our estimate with another optimization algorithm (which converges).
 
 ```{r}
 d.bis.drawDuration %>%
@@ -215,7 +223,34 @@ d.bis.drawDuration %>%
   summary()
 ```
 
-## Double-check the mixed-effects model just on raw accuracy.
+### 'Design plot' for analysis (Fig. 3B)
+
+```{r}
+d.means <- d.bis.drawDuration %>%
+  ungroup() %>%
+  filter(repetition == 7) %>% 
+  mutate(condition = as.factor(condition)) %>%
+  group_by(gameID, condition) %>%
+  summarize(bis_relative = mean(bis_relative))
+
+d.means %>%
+  ggplot(aes(x = condition, y = bis_relative, color = condition, fill = condition, group = gameID)) +
+    geom_point(position = position_jitter(width = 0.1, seed = 123), alpha = 0.15, shape=21,) +
+    geom_line(position = position_jitter(width = 0.1, seed = 123), 
+              alpha = 0.1, color = 'black') +
+    geom_line(aes(group = 1), size = 1, alpha = 0.5, color = 'black', 
+              data = d.means %>% group_by(condition) %>% summarize(bis_relative = mean(bis_relative))) +
+    geom_point(aes(group = NA), size = 5, data = d.means %>% group_by(condition) %>% summarize(bis_relative = mean(bis_relative))) +
+    geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper, y = empirical_stat, group = NA), 
+                  data = d.means %>% group_by(condition) %>% tidyboot_mean(bis_relative),
+                  width =0, size = 2) +
+    geom_hline(yintercept = 0) +
+    theme_few() +
+    labs(x = '') +
+    theme(aspect.ratio = 2)
+```
+
+### Double-check the mixed-effects model just on raw accuracy.
 
 Looks like only the condition random effect is justified for 2.0 replication
 
@@ -257,6 +292,8 @@ d %>%
   group_by(condition) %>%
   tidyboot_mean(diff) 
 ```
+
+### Sketch features (Fig. 4B)
 
 To measure within-interaction convergence on sketch features, first import pre-processed matrices generated in ipynb...
 
@@ -338,7 +375,8 @@ d.recog <- read_csv(paste0(prefix, '_recog_data_bis_', path)) %>%
   mutate(version = factor(version, levels = c("refgame","yoked","scrambled40"), 
                           labels = c("communication", "yoked", "shuffled" ))) 
 ```
-counts in each condition
+
+get counts for each condition
 
 ```{r}
 d.recog %>%
@@ -348,7 +386,7 @@ d.recog %>%
   tally()
 ```
 
-### Analysis of task performance efficiency (BIS, balancing accuracy vs. drawDuration)
+### Analysis of task performance efficiency (BIS)
 
 get bootstrapped relative BIS x repetition, broken out by version
 
@@ -359,7 +397,9 @@ d.recog.boot = d.recog %>%
   ungroup()
 ```
 
-plotting BIS  from refgame, yoked, and scrambled40 experiments
+### Make Fig. 5
+
+(plotting BIS  from refgame, yoked, and scrambled40 experiments)
 
 ```{r}
 d.recog.boot %>%  
@@ -378,7 +418,7 @@ d.recog.boot %>%
 ggsave(paste0('plots/refgame', version, '/recog_BIS_timeseries.pdf'), width=14, height = 10, units='cm')
 ```
 
-mixed-effects modeling of BIS (balancing accuracy vs. drawDuration) from communication vs. yoked experiments
+mixed-effects model of BIS (balancing accuracy vs. drawDuration) from communication vs. yoked experiments
 
 ```{r}
 library(lmerTest)
@@ -389,7 +429,7 @@ d.recog %>%
   summary()
 ```
 
-mixed-effects modeling of BIS (balancing accuracy vs. drawDuration) from yoked vs. scrambled40 experiments
+mixed-effects model of BIS (balancing accuracy vs. drawDuration) from yoked vs. scrambled40 experiments
 
 ```{r}
 d.recog %>% 
@@ -403,7 +443,8 @@ d.recog %>%
 
 ```{r}
 d.acc <- read_csv(paste0(prefix, '_recog_data_', path)) %>%
-  mutate(version = factor(version, levels = c("refgame","yoked","scrambled40"), labels = c("communication", "yoked", "shuffled" ))) %>%
+  mutate(version = factor(version, levels = c("refgame","yoked","scrambled40"), 
+                          labels = c("communication", "yoked", "shuffled" ))) %>%
   group_by(version,condition, gameID,repetition) %>%
   summarize(accuracy=mean(correct), RT = mean(logRT))
 
@@ -416,7 +457,7 @@ d.acc %>%
   mutate(diff = `7` - `0`) 
 ```
 
-Comparing communication and yoked accuracies
+Comparing communication vs. yoked accuracies
 
 ```{r}
 d.acc %>% 
@@ -427,7 +468,7 @@ d.acc %>%
   summary()
 ```
 
-Plotting accuracy timecourse for communication and yoked
+Plotting accuracy timecourse for communication and yoked (SXXX)
 
 ```{r}
 d.acc.rt.boot = d.acc %>%
@@ -466,7 +507,7 @@ prefix = here('../graphical_conventions_latex/nhb2020/figures/rt-and-acc-recog')
 ggsave(paste0(prefix, version, '.pdf'), height = 4, width = 4, units = 'in', useDingbats = F)
 ```
 
-### Interaction history contributes to gains in recognition performance
+### Interaction history contributes to gains in recognition performance (Fig. 4C)
 
 Compute between-interaction divergence 
 
@@ -515,11 +556,7 @@ prefix = paste0('plots/refgame',version, '/across')
 ggsave(paste0(prefix, version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
 ```
 
-### Supplemental: do scorers themselves have a practice effect?
-
-
-
-# Section 3: Diagnosticity
+## Section 2.4: Diagnosticity
 
 ```{r}
 d.diagnosticity <- read_csv(here('data/diagnosticity/graphical_conventions_group_data_run5_submitButton_diagnosticity.csv')) %>%
@@ -549,7 +586,7 @@ d.diagnosticity %>%
   summary()
 ```
 
-# Plot changes in overall diagnosticity
+## Plot changes in overall diagnosticity (Fig. 7)
 
 ```{r}
 d.diagnosticity %>%
@@ -925,6 +962,4 @@ M_mat %>%
     geom_smooth(method = 'lm', formula = y ~ poly(x, 2), group = 1) +
     facet_wrap(~ target) +
     theme_few()
-
-#ggsave('by_target_gamepair.pdf')
 ```
