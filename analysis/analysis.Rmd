@@ -510,12 +510,12 @@ ggsave(paste0(prefix, version, '.pdf'), height = 10, width = 7, units = 'cm', us
 # Section 3: Diagnosticity
 
 ```{r}
-d.diagnosticity <- read_csv(here('data/diagnosticity/graphical_conventions_group_data_run5_submitButton_diagnosticity.csv')) %>%
+d.diagnosticity <- read_csv(here('data/diagnosticity/refgame2.0/graphical_conventions_group_data_run5_submitButton_diagnosticity.csv')) %>%
   select(-png, -svgString) %>%
   filter(!is.na(diagnosticity))
 
-d.objectmap <- read_csv(here('data/diagnosticity/semantic_mapping_annotations_object.csv'))
-d.strokemap <- read_csv(here('data/diagnosticity/semantic_mapping_annotations_stroke.csv')) 
+d.objectmap <- read_csv(here('data/diagnosticity/refgame2.0/semantic_mapping_annotations_object.csv'))
+d.strokemap <- read_csv(here('data/diagnosticity/refgame2.0/semantic_mapping_annotations_stroke.csv')) 
 ```
 
 ```{r}
