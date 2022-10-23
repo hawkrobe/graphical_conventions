@@ -11,7 +11,6 @@ import numpy as np
 from numpy import shape
 from PIL import Image
 import base64
-
 import scipy.stats as stats
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
@@ -407,7 +406,14 @@ def save_sketches(D, sketch_dir, dir_name, iterationName):
 def zscore(x,mu,sd):
     return (x-mu)/(sd+1e-6)
 
-def standardize(D, dv):
+def standardize(D, dv, prepost_only = False):
+    """
+    Purpose of this function is to return a dataframe with 
+        z-scoring applied to dv, a dependent variable 
+    prepost_only: boolean flag controlling whether z-scoring is 
+        applied to all trials in the experiment (pre, repetition, post)
+        or only the pre & post phase trials
+    """
     new_D = pd.DataFrame()
     trial_list = []
     dv_list = []
@@ -417,6 +423,10 @@ def standardize(D, dv):
     condition_list = []
     generalization_list = []
     
+    ## filter out repeated phase trials if and only if prepost_only is true
+    if prepost_only is True: 
+        D = D[D['phase'] != 'repeated']
+
     grouped = D.groupby('gameID')  
     ## loop through games
     for gamename, group in grouped:
@@ -458,6 +468,7 @@ def save_bis(D, csv_dir, iterationName):
     ## convert rep number for post from "1" to "7"
     D.loc[(D['condition']=='control') & (D['repetition']==1),'repetition'] = 7
 
+    ## z-scored accuracy, drawDuration, numStrokes over ALL trials (including from repetition phase)
     standardized_outcome = standardize(D, 'outcome')
     standardized_outcome = standardized_outcome.loc[:,'outcome']
     standardized_drawDuration = standardize(D, 'drawDuration')
@@ -472,7 +483,22 @@ def save_bis(D, csv_dir, iterationName):
     drawDuration_accuracy_bis.to_csv(os.path.join(csv_dir,'graphical_conventions_bis_drawDuration_{}.csv'.format(iterationName)))
     numStrokes_accuracy_bis.to_csv(os.path.join(csv_dir, 'graphical_conventions_bis_numStrokes_{}.csv'.format(iterationName)))
 
-    print ('Saved BIS dataframe out!')
+    ## z-scored accuracy, drawDuration, numStrokes over ONLY PRE/POST trials
+    standardized_outcome = standardize(D, 'outcome', prepost_only = True)
+    standardized_outcome = standardized_outcome.loc[:,'outcome']
+    standardized_drawDuration = standardize(D, 'drawDuration', prepost_only = True)
+    standardized_numStrokes = standardize(D, 'numStrokes', prepost_only = True)
+
+    drawDuration_accuracy = pd.concat([standardized_drawDuration, standardized_outcome], axis = 1)
+    numStrokes_accuracy = pd.concat([standardized_numStrokes, standardized_outcome], axis = 1)
+
+    drawDuration_accuracy_bis = add_bis(drawDuration_accuracy, 'drawDuration')
+    numStrokes_accuracy_bis = add_bis(numStrokes_accuracy, 'numStrokes')    
+
+    drawDuration_accuracy_bis.to_csv(os.path.join(csv_dir,'graphical_conventions_bis_prepostonly_drawDuration_{}.csv'.format(iterationName)))
+    numStrokes_accuracy_bis.to_csv(os.path.join(csv_dir, 'graphical_conventions_bis_prepostonly_numStrokes_{}.csv'.format(iterationName)))
+
+    print('Saved BIS dataframes out!')
 
 ###############################################################################################
 
