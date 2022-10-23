@@ -296,7 +296,6 @@ def generate_dataframe(coll, complete_games, iterationName, csv_dir):
                     timedOut.append(False)
 
                     ## calculate pixel intensity (amount of ink spilled)
-
                     imsize = 100
                     numpix = imsize**2
                     thresh = 250
@@ -304,7 +303,7 @@ def generate_dataframe(coll, complete_games, iterationName, csv_dir):
                     filestr = base64.b64decode(imgData)
                     fname = os.path.join('sketch.png')
                     with open(fname, "wb") as fh:
-                        fh.write(imgData.decode('base64'))
+                        fh.write(filestr)
                     im = Image.open(fname).resize((imsize,imsize))
                     _im = np.array(im)
 
@@ -392,7 +391,7 @@ def save_sketches(D, sketch_dir, dir_name, iterationName):
         filestr = base64.b64decode(imgData)
         fname = 'sketch.png'
         with open(fname, "wb") as fh:
-            fh.write(imgData.decode('base64'))
+            fh.write(filestr)
         im = Image.open(fname)
         #im = im.convert("RGB")
         ### saving sketches to sketch_dir
@@ -531,7 +530,11 @@ def add_recog_session_ids(D):
     for rep in [0,7]:
         new_d['control_rep_{}'.format(rep)] = list(np.roll(control, (rep+8) * 4, axis=0))
 
+    ## initialize recog_id column
     D['recog_id'] = [0] * len(D)
+
+    ## convert rep number for post from "1" to "7"
+    D.loc[(D['condition']=='control') & (D['repetition']==1),'repetition'] = 7    
 
     for i,d in new_d.iterrows():
         for j, pair in enumerate(list(d)):
