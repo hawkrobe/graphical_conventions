@@ -11,7 +11,6 @@ import numpy as np
 from numpy import shape
 from PIL import Image
 import base64
-
 import scipy.stats as stats
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
@@ -297,7 +296,6 @@ def generate_dataframe(coll, complete_games, iterationName, csv_dir):
                     timedOut.append(False)
 
                     ## calculate pixel intensity (amount of ink spilled)
-
                     imsize = 100
                     numpix = imsize**2
                     thresh = 250
@@ -305,7 +303,7 @@ def generate_dataframe(coll, complete_games, iterationName, csv_dir):
                     filestr = base64.b64decode(imgData)
                     fname = os.path.join('sketch.png')
                     with open(fname, "wb") as fh:
-                        fh.write(imgData.decode('base64'))
+                        fh.write(filestr)
                     im = Image.open(fname).resize((imsize,imsize))
                     _im = np.array(im)
 
@@ -355,7 +353,7 @@ def generate_dataframe(coll, complete_games, iterationName, csv_dir):
     _D.loc[_D['gameID'].isin(low_acc_games),'low_acc'] = True
 
     # save out dataframe to be able to load in and analyze later w/o doing the above mongo querying ...
-    _D.to_csv(os.path.join(csv_dir,'graphical_conventions_group_data_{}.csv'.format(iterationName)),index=False)
+    _D.to_csv(os.path.join(csv_dir,iterationName,'graphical_conventions_group_data_{}.csv'.format(iterationName)),index=False)
 
     #D_dining_repeated = D[(D['category'] == 'dining')& (D['condition'] == 'repeated')]
     # Just look at one game
@@ -393,7 +391,7 @@ def save_sketches(D, sketch_dir, dir_name, iterationName):
         filestr = base64.b64decode(imgData)
         fname = 'sketch.png'
         with open(fname, "wb") as fh:
-            fh.write(imgData.decode('base64'))
+            fh.write(filestr)
         im = Image.open(fname)
         #im = im.convert("RGB")
         ### saving sketches to sketch_dir
@@ -407,7 +405,14 @@ def save_sketches(D, sketch_dir, dir_name, iterationName):
 def zscore(x,mu,sd):
     return (x-mu)/(sd+1e-6)
 
-def standardize(D, dv):
+def standardize(D, dv, prepost_only = False):
+    """
+    Purpose of this function is to return a dataframe with 
+        z-scoring applied to dv, a dependent variable 
+    prepost_only: boolean flag controlling whether z-scoring is 
+        applied to all trials in the experiment (pre, repetition, post)
+        or only the pre & post phase trials
+    """
     new_D = pd.DataFrame()
     trial_list = []
     dv_list = []
@@ -417,6 +422,10 @@ def standardize(D, dv):
     condition_list = []
     generalization_list = []
     
+    ## filter out repeated phase trials if and only if prepost_only is true
+    if prepost_only is True: 
+        D = D[D['phase'] != 'repeated']
+
     grouped = D.groupby('gameID')  
     ## loop through games
     for gamename, group in grouped:
@@ -458,6 +467,7 @@ def save_bis(D, csv_dir, iterationName):
     ## convert rep number for post from "1" to "7"
     D.loc[(D['condition']=='control') & (D['repetition']==1),'repetition'] = 7
 
+    ## z-scored accuracy, drawDuration, numStrokes over ALL trials (including from repetition phase)
     standardized_outcome = standardize(D, 'outcome')
     standardized_outcome = standardized_outcome.loc[:,'outcome']
     standardized_drawDuration = standardize(D, 'drawDuration')
@@ -469,10 +479,25 @@ def save_bis(D, csv_dir, iterationName):
     drawDuration_accuracy_bis = add_bis(drawDuration_accuracy, 'drawDuration')
     numStrokes_accuracy_bis = add_bis(numStrokes_accuracy, 'numStrokes')    
 
-    drawDuration_accuracy_bis.to_csv(os.path.join(csv_dir,'graphical_conventions_bis_drawDuration_{}.csv'.format(iterationName)))
-    numStrokes_accuracy_bis.to_csv(os.path.join(csv_dir, 'graphical_conventions_bis_numStrokes_{}.csv'.format(iterationName)))
+    drawDuration_accuracy_bis.to_csv(os.path.join(csv_dir,iterationName,'graphical_conventions_bis_drawDuration_{}.csv'.format(iterationName)))
+    numStrokes_accuracy_bis.to_csv(os.path.join(csv_dir, iterationName, 'graphical_conventions_bis_numStrokes_{}.csv'.format(iterationName)))
 
-    print ('Saved BIS dataframe out!')
+    ## z-scored accuracy, drawDuration, numStrokes over ONLY PRE/POST trials
+    standardized_outcome = standardize(D, 'outcome', prepost_only = True)
+    standardized_outcome = standardized_outcome.loc[:,'outcome']
+    standardized_drawDuration = standardize(D, 'drawDuration', prepost_only = True)
+    standardized_numStrokes = standardize(D, 'numStrokes', prepost_only = True)
+
+    drawDuration_accuracy = pd.concat([standardized_drawDuration, standardized_outcome], axis = 1)
+    numStrokes_accuracy = pd.concat([standardized_numStrokes, standardized_outcome], axis = 1)
+
+    drawDuration_accuracy_bis = add_bis(drawDuration_accuracy, 'drawDuration')
+    numStrokes_accuracy_bis = add_bis(numStrokes_accuracy, 'numStrokes')    
+
+    drawDuration_accuracy_bis.to_csv(os.path.join(csv_dir, iterationName, 'graphical_conventions_bis_prepostonly_drawDuration_{}.csv'.format(iterationName)))
+    numStrokes_accuracy_bis.to_csv(os.path.join(csv_dir, iterationName, 'graphical_conventions_bis_prepostonly_numStrokes_{}.csv'.format(iterationName)))
+
+    print('Saved BIS dataframes out!')
 
 ###############################################################################################
 
@@ -505,7 +530,11 @@ def add_recog_session_ids(D):
     for rep in [0,7]:
         new_d['control_rep_{}'.format(rep)] = list(np.roll(control, (rep+8) * 4, axis=0))
 
+    ## initialize recog_id column
     D['recog_id'] = [0] * len(D)
+
+    ## convert rep number for post from "1" to "7"
+    D.loc[(D['condition']=='control') & (D['repetition']==1),'repetition'] = 7    
 
     for i,d in new_d.iterrows():
         for j, pair in enumerate(list(d)):

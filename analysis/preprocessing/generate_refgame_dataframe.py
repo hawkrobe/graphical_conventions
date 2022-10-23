@@ -2,8 +2,8 @@
 from __future__ import division
 
 import os
-import urllib, cStringIO
-
+import urllib
+# import cStringIO
 import pymongo as pm
 
 import numpy as np
@@ -30,13 +30,13 @@ python generate_refgame_dataframe.py --iterationName run5_submitButton
 '''
 
 # directory & file hierarchy
-proj_dir = os.path.abspath('../../..')
+proj_dir = os.path.abspath('../..')
 analysis_dir = os.getcwd()
-results_dir = os.path.join(proj_dir,'results')
+results_dir = os.path.join(proj_dir,'data')
 plot_dir = os.path.join(results_dir,'plots')
-csv_dir = os.path.join(results_dir,'csv')
+csv_dir = os.path.join(results_dir,'experiment')
 exp_dir = os.path.abspath(os.path.join(proj_dir,'experiments'))
-sketch_dir = os.path.abspath(os.path.join(proj_dir,'sketches'))
+sketch_dir = os.path.abspath(os.path.join(results_dir,'sketches'))
 
 # set vars
 auth = pd.read_csv('auth.txt', header = None) # this auth.txt file contains the password for the sketchloop user
@@ -57,6 +57,7 @@ megsano = ['A1DVQQLVZR7W6I']
 researchers = jefan + hawkrobe + megsano
 
 # Assign variables within imported analysis helpers
+sys.path.append('../helpers')
 import df_generation_helpers as h
 if sys.version_info[0]>=3:
     from importlib import reload
@@ -95,7 +96,7 @@ if __name__ == '__main__':
 	all_games = coll.find({'iterationName':iterationName}).distinct('gameid')
 
 	## get list of complete and valid games
-	complete_games = h.get_complete_and_valid_games(all_games,coll,iterationName1,researchers=researchers, tolerate_undefined_worker=False)
+	complete_games = h.get_complete_and_valid_games(all_games,coll,iterationName,researchers=researchers, tolerate_undefined_worker=False)
 
 	## generate actual dataframe and get only valid games (filtering out games with low accuracy, timeouts)
 	D = h.generate_dataframe(coll, complete_games, iterationName, csv_dir)
