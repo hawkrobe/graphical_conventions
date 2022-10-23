@@ -13,24 +13,25 @@ library(brms)
 library(broom.mixed)
 library(tidyboot)
 library(here)
+
 ```
 
 # Import group data
 
 ```{r}
-version = '1.2'
-prefix = here(paste0('data/experiment/refgame', version, '/graphical_conventions'))
+version = '1.2' # 2.0 / 1.2
+data_prefix = here(paste0('data/experiment/refgame', version, '/graphical_conventions'))
 path = ifelse(version == '1.2', 'run3run4.csv', 'run5_submitButton.csv')
 
-d <- paste0(prefix, '_group_data_', path) %>%
+d <- paste0(data_prefix, '_group_data_', path) %>%
   read_csv() %>% 
   select(-png)
 
-d.bis.drawDuration.raw <- paste0(prefix, '_bis_drawDuration_', path) %>%
+d.bis.drawDuration.raw <- paste0(data_prefix, '_bis_drawDuration_', path) %>%
   read_csv() %>% 
   select(-`...1`)
 
-d.bis.numStrokes <- paste0(prefix, '_bis_numStrokes_', path) %>% 
+d.bis.numStrokes <- paste0(data_prefix, '_bis_numStrokes_', path) %>% 
   read_csv() %>%
   select(-`...1`)
 ```
@@ -91,8 +92,8 @@ d.bis.drawDuration %>%
           element_line(size=1), 
           element_rect(size=2, color="#00000"))
 
-prefix = here('../graphical_conventions_latex/natcomms2020/figures/refgame_BIS_timeseries')
-ggsave(paste0(prefix, version, '.pdf'), width=14, height = 10, units='cm')
+tmp_prefix = here('../graphical_conventions_latex/natcomms2020/figures/refgame_BIS_timeseries')
+ggsave(paste0(tmpprefix, version, '.pdf'), width=14, height = 10, units='cm')
 ```
 
 ### Simple effect of BIS in repetition condition
@@ -101,34 +102,30 @@ ggsave(paste0(prefix, version, '.pdf'), width=14, height = 10, units='cm')
 d.bis.drawDuration %>%
   filter(condition == 'repeated') %>%
   mutate(repetition = scale(repetition)) %>%
-  lmer(bis ~ repetition + (0 + repetition | gameID),
+  lmer(bis ~ poly(repetition, 2) + (0 + repetition | gameID),
       data = .,
       control=lmerControl(optimizer = 'bobyqa')) %>%
   summary()
 ```
 
-### Simple effect of RT in repetition condition
+### Simple effect of accuracy & RT in repetition condition
 
 ```{r}
 d %>%
   filter(condition == 'repeated') %>%
   mutate(repetition = scale(repetition)) %>%
-  lmer(drawDuration ~ repetition + (1 + repetition | gameID),
-      data = .,
-      control=lmerControl(optimizer = 'bobyqa')) %>%
-  summary()
-```
-
-### Simple effect of (only) accuracy in repetition condition
-
-```{r}
-d %>%
-  filter(condition == 'repeated') %>%
-  mutate(repetition = scale(repetition)) %>%
-  glmer(outcome ~ repetition + (1 | gameID),
+  glmer(outcome ~ poly(repetition, 2) + (1 | gameID),
       data = .,
       family='binomial',
       control=glmerControl(optimizer = 'bobyqa')) %>%
+  summary()
+
+d %>%
+  filter(condition == 'repeated') %>%
+  mutate(repetition = scale(repetition)) %>%
+  lmer(drawDuration ~ poly(repetition, 2) + (1 + repetition | gameID),
+      data = .,
+      control=lmerControl(optimizer = 'bobyqa')) %>%
   summary()
 ```
 
@@ -140,6 +137,20 @@ d %>%
   lmer(numStrokes ~ repetition + (1 + repetition | gameID), 
        data = .) %>%
   summary()
+```
+
+### Bayesian CPM versions of these
+
+```{r}
+### Bayesian version of these
+library(brms)
+
+d.bis.drawDuration %>%
+  filter(condition == 'repeated') %>%
+  brm(bis ~ mo(repetition) + (0 + mo(repetition) | gameID),
+      data = .) %>%
+  summary()
+
 ```
 
 ### Figure 4A 
@@ -163,8 +174,8 @@ d %>%
           element_line(size=1), element_rect(size=2, color="#00000")) 
   
 
-prefix = paste0('plots/refgame', version, '/num_strokes')
-ggsave(paste0(prefix, version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
+tmpprefix = paste0('plots/refgame', version, '/num_strokes')
+ggsave(paste0(tmpprefix, version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
 ```
 
 ## Section 2.2: Object-specificity
@@ -235,9 +246,9 @@ d.means <- d.bis.drawDuration %>%
 
 d.means %>%
   ggplot(aes(x = condition, y = bis_relative, color = condition, fill = condition, group = gameID)) +
-    geom_point(position = position_jitter(width = 0.1, seed = 123), alpha = 0.15, shape=21,) +
+    geom_point(position = position_jitter(width = 0.1, seed = 123), alpha = 0.1, shape=21,) +
     geom_line(position = position_jitter(width = 0.1, seed = 123), 
-              alpha = 0.1, color = 'black') +
+              alpha = 0.05, color = 'black') +
     geom_line(aes(group = 1), size = 1, alpha = 0.5, color = 'black', 
               data = d.means %>% group_by(condition) %>% summarize(bis_relative = mean(bis_relative))) +
     geom_point(aes(group = NA), size = 5, data = d.means %>% group_by(condition) %>% summarize(bis_relative = mean(bis_relative))) +
@@ -247,7 +258,9 @@ d.means %>%
     geom_hline(yintercept = 0) +
     theme_few() +
     labs(x = '') +
-    theme(aspect.ratio = 2)
+    theme(aspect.ratio = 2, legend.position = 'none')
+
+ggsave(here('../graphical_conventions_latex/natcomms2020/figures/fig3b_variability.pdf'), units = 'cm', height = 9, width = 5)
 ```
 
 ### Double-check the mixed-effects model just on raw accuracy.
@@ -299,16 +312,16 @@ To measure within-interaction convergence on sketch features, first import pre-p
 
 ```{r}
 library(reticulate)
-prefix <- paste0('../data/features/refgame', version)
+featureprefix <- paste0('../data/features/refgame', version)
 np <- import("numpy")
-F_mat_raw_nonorm = np$load(paste0(prefix, '/FEATURES_vgg_FC6.npy'))
+F_mat_raw_nonorm = np$load(paste0(featureprefix, '/FEATURES_vgg_FC6.npy'))
 ```
 
 ```{r}
 source('helpers/helpers.R')
 library(broom)
 detach('package:lmerTest')
-M_mat = read_csv(paste0(prefix, '/METADATA.csv')) %>%
+M_mat = read_csv(paste0(featureprefix, '/METADATA.csv')) %>%
   mutate(path = gsub('/home/jefan/graphical_conventions/results/sketches/refgame.*/png/', '', path)) %>%
   mutate(path = gsub('.png', '', path)) %>%
   separate(path, into = c('gameID', 'category', 'target', 'repetition'), sep = '_') %>%
@@ -362,8 +375,8 @@ ggplot(empirical.within, aes(x = `rep diff`, y = empirical_stat,
           element_line(size=1), element_rect(size=2, color="#00000"))
 
 
-prefix = paste0('plots/refgame', version, '/within')
-ggsave(paste0(prefix, version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
+tmpprefix = paste0('plots/refgame', version, '/within')
+ggsave(paste0(tmpprefix, version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
 ```
 
 ## Section 2.3: Conventions are interaction-specific 
@@ -371,9 +384,10 @@ ggsave(paste0(prefix, version, '.pdf'), height = 10, width = 7, units = 'cm', us
 ### load in data from control conditions
 
 ```{r}
-d.recog <- read_csv(paste0(prefix, '_recog_data_bis_', path)) %>%
+d.recog <- read_csv(paste0(data_prefix, '_recog_data_bis_', path)) %>%
   mutate(version = factor(version, levels = c("refgame","yoked","scrambled40"), 
-                          labels = c("communication", "yoked", "shuffled" ))) 
+                          labels = c("communication", "yoked", "shuffled" )))  %>%
+  filter(!is.na(version))
 ```
 
 get counts for each condition
@@ -442,11 +456,13 @@ d.recog %>%
 ### Analysis of change in raw accuracy & RT across all three groups: communication, yoked, shuffled
 
 ```{r}
-d.acc <- read_csv(paste0(prefix, '_recog_data_', path)) %>%
+d.acc <- read_csv(paste0(data_prefix, '_recog_data_', path)) %>%
   mutate(version = factor(version, levels = c("refgame","yoked","scrambled40"), 
                           labels = c("communication", "yoked", "shuffled" ))) %>%
+  mutate(repetition = ifelse(version == 'communication' & condition == 'control' & repetition == 1, 7, repetition)) %>%
   group_by(version,condition, gameID,repetition) %>%
-  summarize(accuracy=mean(correct), RT = mean(logRT))
+  summarize(accuracy=mean(correct), RT = mean(logRT)) %>%
+  filter(!is.na(version))
 
 d.acc %>%
   gather(measure, value, accuracy, RT) %>%
@@ -481,9 +497,9 @@ d.acc.rt.boot %>%
   ggplot(aes(x = repetition, y = empirical_stat, 
              color = version, fill = version, linetype = condition)) +
     geom_line() +
-    geom_line(aes(group = interaction(gameID, condition), y = value, 
-                  color = version, fill = version, linetype = condition), 
-              alpha = 0.05, data = d.acc %>% gather(measure, value, accuracy, RT)) +
+    # geom_line(aes(group = interaction(gameID, condition), y = value, 
+    #               color = version, fill = version, linetype = condition), 
+    #           alpha = 0.05, data = d.acc %>% gather(measure, value, accuracy, RT)) +
     geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2, color = NA) +
     theme_few() +
     ylab('') +
@@ -503,8 +519,8 @@ d.acc.rt.boot %>%
     guides(color = 'none', fill = 'none') 
     #ylim(0.6, 1) +
 
-prefix = here('../graphical_conventions_latex/nhb2020/figures/rt-and-acc-recog')
-ggsave(paste0(prefix, version, '.pdf'), height = 4, width = 4, units = 'in', useDingbats = F)
+tmpprefix = here('../graphical_conventions_latex/natcomms2020/figures/rt-and-acc-recog')
+ggsave(paste0(tmpprefix, version, '.pdf'), height = 4, width = 4, units = 'in', useDingbats = F)
 ```
 
 ### Interaction history contributes to gains in recognition performance (Fig. 4C)
@@ -552,8 +568,8 @@ ggplot(d.toplot, aes(x = repetition, y = empirical_stat, group = sample_id,
   theme(legend.position = c(0.5, 0.8), text = element_text(size=18), 
         element_line(size=1), element_rect(size=2, color="#00000"))
 
-prefix = paste0('plots/refgame',version, '/across')
-ggsave(paste0(prefix, version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
+tmpprefix = paste0('plots/refgame',version, '/across')
+ggsave(paste0(tmpprefix, version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
 ```
 
 ## Section 2.4: Diagnosticity
