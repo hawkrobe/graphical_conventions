@@ -353,7 +353,7 @@ def generate_dataframe(coll, complete_games, iterationName, csv_dir):
     _D.loc[_D['gameID'].isin(low_acc_games),'low_acc'] = True
 
     # save out dataframe to be able to load in and analyze later w/o doing the above mongo querying ...
-    _D.to_csv(os.path.join(csv_dir,'graphical_conventions_group_data_{}.csv'.format(iterationName)),index=False)
+    _D.to_csv(os.path.join(csv_dir,iterationName,'graphical_conventions_group_data_{}.csv'.format(iterationName)),index=False)
 
     #D_dining_repeated = D[(D['category'] == 'dining')& (D['condition'] == 'repeated')]
     # Just look at one game
@@ -479,8 +479,8 @@ def save_bis(D, csv_dir, iterationName):
     drawDuration_accuracy_bis = add_bis(drawDuration_accuracy, 'drawDuration')
     numStrokes_accuracy_bis = add_bis(numStrokes_accuracy, 'numStrokes')    
 
-    drawDuration_accuracy_bis.to_csv(os.path.join(csv_dir,'graphical_conventions_bis_drawDuration_{}.csv'.format(iterationName)))
-    numStrokes_accuracy_bis.to_csv(os.path.join(csv_dir, 'graphical_conventions_bis_numStrokes_{}.csv'.format(iterationName)))
+    drawDuration_accuracy_bis.to_csv(os.path.join(csv_dir,iterationName,'graphical_conventions_bis_drawDuration_{}.csv'.format(iterationName)))
+    numStrokes_accuracy_bis.to_csv(os.path.join(csv_dir, iterationName, 'graphical_conventions_bis_numStrokes_{}.csv'.format(iterationName)))
 
     ## z-scored accuracy, drawDuration, numStrokes over ONLY PRE/POST trials
     standardized_outcome = standardize(D, 'outcome', prepost_only = True)
@@ -494,8 +494,8 @@ def save_bis(D, csv_dir, iterationName):
     drawDuration_accuracy_bis = add_bis(drawDuration_accuracy, 'drawDuration')
     numStrokes_accuracy_bis = add_bis(numStrokes_accuracy, 'numStrokes')    
 
-    drawDuration_accuracy_bis.to_csv(os.path.join(csv_dir,'graphical_conventions_bis_prepostonly_drawDuration_{}.csv'.format(iterationName)))
-    numStrokes_accuracy_bis.to_csv(os.path.join(csv_dir, 'graphical_conventions_bis_prepostonly_numStrokes_{}.csv'.format(iterationName)))
+    drawDuration_accuracy_bis.to_csv(os.path.join(csv_dir, iterationName, 'graphical_conventions_bis_prepostonly_drawDuration_{}.csv'.format(iterationName)))
+    numStrokes_accuracy_bis.to_csv(os.path.join(csv_dir, iterationName, 'graphical_conventions_bis_prepostonly_numStrokes_{}.csv'.format(iterationName)))
 
     print('Saved BIS dataframes out!')
 

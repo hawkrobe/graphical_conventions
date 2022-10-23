@@ -30,13 +30,13 @@ python generate_refgame_dataframe.py --iterationName run5_submitButton
 '''
 
 # directory & file hierarchy
-proj_dir = os.path.abspath('../../..')
+proj_dir = os.path.abspath('../..')
 analysis_dir = os.getcwd()
-results_dir = os.path.join(proj_dir,'results')
+results_dir = os.path.join(proj_dir,'data')
 plot_dir = os.path.join(results_dir,'plots')
-csv_dir = os.path.join(results_dir,'csv')
+csv_dir = os.path.join(results_dir,'experiment')
 exp_dir = os.path.abspath(os.path.join(proj_dir,'experiments'))
-sketch_dir = os.path.abspath(os.path.join(proj_dir,'sketches'))
+sketch_dir = os.path.abspath(os.path.join(results_dir,'sketches'))
 
 # set vars
 auth = pd.read_csv('auth.txt', header = None) # this auth.txt file contains the password for the sketchloop user
