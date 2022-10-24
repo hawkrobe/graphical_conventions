@@ -42,7 +42,7 @@ sketch_dir = os.path.abspath(os.path.join(results_dir,'sketches'))
 auth = pd.read_csv('auth.txt', header = None) # this auth.txt file contains the password for the sketchloop user
 pswd = auth.values[0][0]
 user = 'sketchloop'
-host = 'stanford-cogsci.org' ## cocolab ip address
+host = 'cogtoolslab.org' ## cogtoolslab hostname
 
 # have to fix this to be able to analyze from local
 import pymongo as pm
@@ -55,6 +55,12 @@ jefan = ['A1MMCS8S8CTWKU','A1MMCS8S8CTWKV','A1MMCS8S8CTWKS']
 hawkrobe = ['A1BOIDKD33QSDK']
 megsano = ['A1DVQQLVZR7W6I']
 researchers = jefan + hawkrobe + megsano
+
+# helper dictionary for mapping iteration names to alt iteration names
+ITERATIONNAME2ALTNAME = {'run3_size4_waiting': 'refgame1.2', 
+						 'run4_generalization': 'refgame1.2',
+						 'run3run4': 'refgame1.2', 
+                         'run5_submitButton': 'refgame2.0'}
 
 # Assign variables within imported analysis helpers
 sys.path.append('../helpers')
@@ -88,46 +94,69 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 	iterationName = args.iterationName
 
-	## get total number of stroke and clickedObj events in the collection as a whole
-	S = coll.find({ '$and': [{'iterationName':iterationName}, {'eventType': 'stroke'}]}).sort('time')
-	C = coll.find({ '$and': [{'iterationName':iterationName}, {'eventType': 'clickedObj'}]}).sort('time')
+	## if iterationName is either run3_size4_waiting OR run4_generalization, 
+	## generate dataframes for each and concatenate to generate single group dataframe
+	## with suffix `run3run4`.
+	if iterationName in ['run3_size4_waiting','run4_generalization']:
+		iterationNameList = ['run3_size4_waiting','run4_generalization']
+	else:
+		iterationNameList = ['run5_submitButton']
 
-	## get list of all candidate games
-	all_games = coll.find({'iterationName':iterationName}).distinct('gameid')
+	for thisIterationName in iterationNameList:
 
-	## get list of complete and valid games
-	complete_games = h.get_complete_and_valid_games(all_games,coll,iterationName,researchers=researchers, tolerate_undefined_worker=False)
+		## get total number of stroke and clickedObj events in the collection as a whole
+		S = coll.find({ '$and': [{'iterationName':thisIterationName}, {'eventType': 'stroke'}]}).sort('time')
+		C = coll.find({ '$and': [{'iterationName':thisIterationName}, {'eventType': 'clickedObj'}]}).sort('time')
 
-	## generate actual dataframe and get only valid games (filtering out games with low accuracy, timeouts)
-	D = h.generate_dataframe(coll, complete_games, iterationName, csv_dir)
+		## get list of all candidate games
+		all_games = coll.find({'iterationName':thisIterationName}).distinct('gameid')
 
-	# ## filter crazies and add column
-	D = h.find_crazies(D)
+		## get list of complete and valid games
+		complete_games = h.get_complete_and_valid_games(all_games,coll,thisIterationName,researchers=researchers, tolerate_undefined_worker=False)
 
-	## add features for recognition experiment
-	D = h.add_recog_session_ids(D)
-	D = h.add_distractors_and_shapenet_ids(D)
+		## generate actual dataframe and get only valid games (filtering out games with low accuracy, timeouts)
+		D = h.generate_dataframe(coll, complete_games, thisIterationName, csv_dir)
 
-	## if generalization column still capitalized, fix it
-	try:
-		D = D.rename(index=str, columns={"Generalization": "generalization"})
-	except:
-		pass
+		# ## filter crazies and add column
+		D = h.find_crazies(D)
 
-	## filter out single low accuracy game
-	D = D[D['low_acc'] != True]
+		## add features for recognition experiment
+		D = h.add_recog_session_ids(D)
+		D = h.add_distractors_and_shapenet_ids(D)
 
-	## filter out games with missing data
-	missing_data_games = D[D['drawDuration'].isna()]['gameID'].values
-	D = D[-D['gameID'].isin(missing_data_games)]
+		## if generalization column still capitalized, fix it
+		try:
+			D = D.rename(index=str, columns={"Generalization": "generalization"})
+		except:
+			pass
 
-	## assign extra columns to keep track of category/subset/condition combinations
-	if iterationName=='run5_submitButton':
-		D = D.assign(category_subset = pd.Series(D['category'] + D['subset']))
-		D = D.assign(category_subset_condition = pd.Series(D['category'] + D['subset'] + D['condition']))
+		## filter out single low accuracy game
+		D = D[D['low_acc'] != True]
 
-	# save out master dataframe
-	D.to_csv(os.path.join(csv_dir, 'graphical_conventions_group_data_{}.csv'.format(iterationName)), index=False)
+		## filter out games with missing data
+		missing_data_games = D[D['drawDuration'].isna()]['gameID'].values
+		D = D[-D['gameID'].isin(missing_data_games)]
 
-	## write out bis dataframe to results dir
-	h.save_bis(D, csv_dir, iterationName)
+		## assign extra columns to keep track of category/subset/condition combinations
+		if thisIterationName=='run5_submitButton':
+			D = D.assign(category_subset = pd.Series(D['category'] + D['subset']))
+			D = D.assign(category_subset_condition = pd.Series(D['category'] + D['subset'] + D['condition']))
+
+		## save out master dataframe for this iteration
+		D.to_csv(os.path.join(csv_dir,ITERATIONNAME2ALTNAME[thisIterationName], 'graphical_conventions_group_data_{}.csv'.format(iterationName)), index=False)
+		print('Saved out group dataframe from iteration: {}!'.format(iterationName))
+
+	if iterationName in ['run3_size4_waiting','run4_generalization']:
+		## read in both group dataframes for run3_run4_waiting and run4_generalization and join
+		D1 = pd.read_csv(os.path.join(csv_dir,ITERATIONNAME2ALTNAME[iterationName], 'graphical_conventions_group_data_run3_run4_waiting.csv'.format(iterationName)))
+		D2 = pd.read_csv(os.path.join(csv_dir,ITERATIONNAME2ALTNAME[iterationName], 'graphical_conventions_group_data_run4_generalization.csv'.format(iterationName)))
+		D = pd.concat([D1,D2])
+		D.to_csv(os.path.join(csv_dir, ITERATIONNAME2ALTNAME[iterationName],'graphical_conventions_group_data_run3run4.csv'), index=False)
+		print('Loaded in run3_size4_waiting and run4_generalization group data and concatenated to generate run3run4 version')		
+
+		## write out run3run4 (aka refgame1.2) bis dataframe to results dir
+		h.save_bis(D, csv_dir, 'run3run4')
+
+	else:
+		## write out run5_submitButton (aka refgame2.0) bis dataframe to results dir
+		h.save_bis(D, csv_dir, iterationName)

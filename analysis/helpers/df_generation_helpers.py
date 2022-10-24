@@ -59,6 +59,9 @@ CATEGORY_TO_OBJECT_run2 = {
     'waiting': ['waiting_00','waiting_01','waiting_02','waiting_03','waiting_04','waiting_05','waiting_06','waiting_07','waiting_08','waiting_09','waiting_10','waiting_11']
 }
 
+ITERATIONNAME2ALTNAME = {'run3run4': 'refgame1.2', 
+                         'run5_submitButton': 'refgame2.0'}
+
 ################################################################################################
 # map object names to shapenet ids 
 
@@ -301,7 +304,7 @@ def generate_dataframe(coll, complete_games, iterationName, csv_dir):
                     thresh = 250
                     imgData = t['pngString']
                     filestr = base64.b64decode(imgData)
-                    fname = os.path.join('sketch.png')
+                    fname = os.path.join('sketch_{}.png'.format(iterationName))
                     with open(fname, "wb") as fh:
                         fh.write(filestr)
                     im = Image.open(fname).resize((imsize,imsize))
@@ -353,7 +356,7 @@ def generate_dataframe(coll, complete_games, iterationName, csv_dir):
     _D.loc[_D['gameID'].isin(low_acc_games),'low_acc'] = True
 
     # save out dataframe to be able to load in and analyze later w/o doing the above mongo querying ...
-    _D.to_csv(os.path.join(csv_dir,iterationName,'graphical_conventions_group_data_{}.csv'.format(iterationName)),index=False)
+    _D.to_csv(os.path.join(csv_dir,ITERATIONNAME2ALTNAME[iterationName],'graphical_conventions_group_data_{}.csv'.format(iterationName)),index=False)
 
     #D_dining_repeated = D[(D['category'] == 'dining')& (D['condition'] == 'repeated')]
     # Just look at one game
@@ -479,8 +482,8 @@ def save_bis(D, csv_dir, iterationName):
     drawDuration_accuracy_bis = add_bis(drawDuration_accuracy, 'drawDuration')
     numStrokes_accuracy_bis = add_bis(numStrokes_accuracy, 'numStrokes')    
 
-    drawDuration_accuracy_bis.to_csv(os.path.join(csv_dir,iterationName,'graphical_conventions_bis_drawDuration_{}.csv'.format(iterationName)))
-    numStrokes_accuracy_bis.to_csv(os.path.join(csv_dir, iterationName, 'graphical_conventions_bis_numStrokes_{}.csv'.format(iterationName)))
+    drawDuration_accuracy_bis.to_csv(os.path.join(csv_dir,ITERATIONNAME2ALTNAME[iterationName],'graphical_conventions_bis_drawDuration_{}.csv'.format(iterationName)))
+    numStrokes_accuracy_bis.to_csv(os.path.join(csv_dir, ITERATIONNAME2ALTNAME[iterationName], 'graphical_conventions_bis_numStrokes_{}.csv'.format(iterationName)))
 
     ## z-scored accuracy, drawDuration, numStrokes over ONLY PRE/POST trials
     standardized_outcome = standardize(D, 'outcome', prepost_only = True)
@@ -494,8 +497,8 @@ def save_bis(D, csv_dir, iterationName):
     drawDuration_accuracy_bis = add_bis(drawDuration_accuracy, 'drawDuration')
     numStrokes_accuracy_bis = add_bis(numStrokes_accuracy, 'numStrokes')    
 
-    drawDuration_accuracy_bis.to_csv(os.path.join(csv_dir, iterationName, 'graphical_conventions_bis_prepostonly_drawDuration_{}.csv'.format(iterationName)))
-    numStrokes_accuracy_bis.to_csv(os.path.join(csv_dir, iterationName, 'graphical_conventions_bis_prepostonly_numStrokes_{}.csv'.format(iterationName)))
+    drawDuration_accuracy_bis.to_csv(os.path.join(csv_dir, ITERATIONNAME2ALTNAME[iterationName], 'graphical_conventions_bis_prepostonly_drawDuration_{}.csv'.format(iterationName)))
+    numStrokes_accuracy_bis.to_csv(os.path.join(csv_dir, ITERATIONNAME2ALTNAME[iterationName], 'graphical_conventions_bis_prepostonly_numStrokes_{}.csv'.format(iterationName)))
 
     print('Saved BIS dataframes out!')
 
