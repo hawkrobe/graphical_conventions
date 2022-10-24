@@ -98,7 +98,7 @@ if __name__ == '__main__':
 	## generate dataframes for each and concatenate to generate single group dataframe
 	## with suffix `run3run4`.
 	if iterationName in ['run3_size4_waiting','run4_generalization']:
-		iterationNameList = ['run3_size4_waiting','run4_generalization']
+		iterationNameList = ['run4_generalization','run3_size4_waiting']
 	else:
 		iterationNameList = ['run5_submitButton']
 
@@ -143,15 +143,15 @@ if __name__ == '__main__':
 			D = D.assign(category_subset_condition = pd.Series(D['category'] + D['subset'] + D['condition']))
 
 		## save out master dataframe for this iteration
-		D.to_csv(os.path.join(csv_dir,ITERATIONNAME2ALTNAME[thisIterationName], 'graphical_conventions_group_data_{}.csv'.format(iterationName)), index=False)
-		print('Saved out group dataframe from iteration: {}!'.format(iterationName))
+		D.to_csv(os.path.join(csv_dir,ITERATIONNAME2ALTNAME[thisIterationName], 'graphical_conventions_group_data_{}.csv'.format(thisIterationName)), index=False)
+		print('Saved out group dataframe from iteration: {}!'.format(thisIterationName))
 
 	if iterationName in ['run3_size4_waiting','run4_generalization']:
 		## read in both group dataframes for run3_run4_waiting and run4_generalization and join
 		D1 = pd.read_csv(os.path.join(csv_dir,ITERATIONNAME2ALTNAME[iterationName], 'graphical_conventions_group_data_run3_size4_waiting.csv'))
 		D2 = pd.read_csv(os.path.join(csv_dir,ITERATIONNAME2ALTNAME[iterationName], 'graphical_conventions_group_data_run4_generalization.csv'))
-		D = pd.concat([D1,D2])
-		D.to_csv(os.path.join(csv_dir, ITERATIONNAME2ALTNAME[iterationName],'graphical_conventions_group_data_run3run4.csv'), index=False)
+		D3 = pd.concat([D1,D2])
+		D3.to_csv(os.path.join(csv_dir, ITERATIONNAME2ALTNAME[iterationName],'graphical_conventions_group_data_run3run4.csv'), index=False)
 		print('Loaded in run3_size4_waiting and run4_generalization group data and concatenated to generate run3run4 version')		
 
 		## write out run3run4 (aka refgame1.2) bis dataframe to results dir
