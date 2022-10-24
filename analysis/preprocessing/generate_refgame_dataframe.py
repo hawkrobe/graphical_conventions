@@ -155,7 +155,7 @@ if __name__ == '__main__':
 		print('Loaded in run3_size4_waiting and run4_generalization group data and concatenated to generate run3run4 version')		
 
 		## write out run3run4 (aka refgame1.2) bis dataframe to results dir
-		h.save_bis(D, csv_dir, 'run3run4')
+		h.save_bis(D3, csv_dir, 'run3run4')
 
 	else:
 		## write out run5_submitButton (aka refgame2.0) bis dataframe to results dir
