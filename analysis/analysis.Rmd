@@ -13,10 +13,11 @@ library(brms)
 library(broom.mixed)
 library(tidyboot)
 library(here)
-
 ```
 
 # Import group data
+
+To center every condition at the same starting point, we generate a "baseline" data-frame that computes BIS for the "pre-" phase, grouping by condition and gameID. Then we add this "baseline" bis to each row of original bis dataframe.
 
 ```{r}
 version = '1.2' # 2.0 / 1.2
@@ -31,26 +32,6 @@ d.bis.drawDuration.raw <- paste0(data_prefix, '_bis_drawDuration_', path) %>%
   read_csv() %>% 
   select(-`...1`)
 
-d.bis.numStrokes <- paste0(data_prefix, '_bis_numStrokes_', path) %>% 
-  read_csv() %>%
-  select(-`...1`)
-```
-Some basic statistics about the dataset to report
-
-```{r}
-numGames <- d %>% 
-  pull(gameID) %>%
-  unique() %>%
-  length()
-
-cat("we collected", numGames, "games")
-```
-
-## Preprocess BIS data
-
-To center every condition at the same starting point, we generate a "baseline" data-frame that computes BIS for the "pre-" phase, grouping by condition and gameID. Then we add this "baseline" bis to each row of original bis dataframe.
-
-```{r}
 d.bis.drawDuration <- d.bis.drawDuration.raw %>%
   filter(repetition==0) %>%
   group_by(condition,gameID) %>%
@@ -58,9 +39,22 @@ d.bis.drawDuration <- d.bis.drawDuration.raw %>%
   inner_join(d.bis.drawDuration.raw, 
              by = c('condition','gameID'), 
              suffix = c("","_baseline")) %>%
-  mutate(bis_relative = bis - bis_baseline,
+  ungroup() %>%
+  mutate(repetition = ifelse(condition == 'control' & repetition == 1, 7, repetition),
+         bis_relative = bis - bis_baseline,
          repetition_1 = repetition + 1)
 ```
+Some basic statistics about the dataset to report
+
+```{r}
+numGames <- d.bis.drawDuration %>% 
+  pull(gameID) %>%
+  unique() %>%
+  length()
+
+cat("we collected", numGames, "games")
+```
+
 
 # Behavioral Results
 
@@ -75,7 +69,7 @@ d.bis.drawDuration %>%
   group_by(gameID, condition, repetition_1) %>%
   summarize(bis_relative = mean(bis_relative)) %>%
   group_by(condition, repetition_1) %>% 
-  tidyboot_mean(bis_relative, nboot=100) %>%
+  tidyboot_mean(bis_relative, nboot=1000) %>%
   ggplot(aes(x=repetition_1, y=empirical_stat, color=condition, fill=condition)) + 
     geom_line(size=1.5)+
     geom_ribbon(aes(ymin=ci_lower, ymax = ci_upper), alpha=.25, color=NA,
@@ -92,64 +86,51 @@ d.bis.drawDuration %>%
           element_line(size=1), 
           element_rect(size=2, color="#00000"))
 
-tmp_prefix = here('../graphical_conventions_latex/natcomms2020/figures/refgame_BIS_timeseries')
-ggsave(paste0(tmpprefix, version, '.pdf'), width=14, height = 10, units='cm')
+tmp_prefix = here('../graphical_conventions_latex/natcomms2020/figures/')
+ggsave(paste0(tmpprefix, 'refgame_BIS_timeseries', version, '.pdf'), width=14, height = 10, units='cm')
 ```
 
 ### Simple effect of BIS in repetition condition
 
 ```{r}
-d.bis.drawDuration %>%
-  filter(condition == 'repeated') %>%
-  mutate(repetition = scale(repetition)) %>%
-  lmer(bis ~ poly(repetition, 2) + (0 + repetition | gameID),
-      data = .,
-      control=lmerControl(optimizer = 'bobyqa')) %>%
+lmer(bis ~ poly(repetition, 2) + (0 + poly(repetition, 1) | gameID),
+      data = d.bis.drawDuration %>% filter(condition == 'repeated'),
+      control = lmerControl(optimizer = 'bobyqa')) %>%
   summary()
-```
 
-### Simple effect of accuracy & RT in repetition condition
-
-```{r}
-d %>%
-  filter(condition == 'repeated') %>%
-  mutate(repetition = scale(repetition)) %>%
-  glmer(outcome ~ poly(repetition, 2) + (1 | gameID),
-      data = .,
+glmer(outcome ~ poly(repetition, 2) + (1 + poly(repetition,1) | gameID),
+      data = d %>% filter(condition == 'repeated'),
       family='binomial',
       control=glmerControl(optimizer = 'bobyqa')) %>%
   summary()
 
-d %>%
-  filter(condition == 'repeated') %>%
-  mutate(repetition = scale(repetition)) %>%
-  lmer(drawDuration ~ poly(repetition, 2) + (1 + repetition | gameID),
-      data = .,
-      control=lmerControl(optimizer = 'bobyqa')) %>%
+lmer(drawDuration ~ poly(repetition, 2) + (1 + poly(repetition,1) | gameID),
+     data = d %>% filter(condition == 'repeated'),
+     control=lmerControl(optimizer = 'bobyqa')) %>%
+  summary()
+
+lmer(numStrokes ~ poly(repetition,2) + (1 + poly(repetition,1) | gameID), 
+     data = d %>% filter(condition=='repeated'),
+     control=lmerControl(optimizer = 'bobyqa')) %>%
   summary()
 ```
 
-### Simple effect of number of strokes in repeated condition.
+### Bayesian versions of these (2.1A)
 
 ```{r}
-d %>% 
-  filter(condition=='repeated') %>%
-  lmer(numStrokes ~ repetition + (1 + repetition | gameID), 
-       data = .) %>%
-  summary()
-```
+# using mo() for monotonic predictors
+bis.brm <- brm(bis ~ mo(repetition) + (0 + mo(repetition) | gameID),
+               data = d.bis.drawDuration %>% filter(condition == 'repeated'))
 
-### Bayesian CPM versions of these
+acc.brm <- brm(outcome ~ mo(repetition) + (1 + mo(repetition) | gameID),
+              data = d %>% filter(condition == 'repeated'),
+              family='bernoulli')
 
-```{r}
-### Bayesian version of these
-library(brms)
+rt.brm <- brm(drawDuration ~ mo(repetition) + (1 + mo(repetition) | gameID),
+              data = d %>% filter(condition == 'repeated'))
 
-d.bis.drawDuration %>%
-  filter(condition == 'repeated') %>%
-  brm(bis ~ mo(repetition) + (0 + mo(repetition) | gameID),
-      data = .) %>%
-  summary()
+strokes.brm <- brm(numStrokes ~ mo(repetition) + (1 + mo(repetition) | gameID), 
+                   data = d %>% filter(condition=='repeated'))
 
 ```
 
@@ -171,7 +152,8 @@ d %>%
     scale_x_continuous(labels = c(1,2,3,4,5,6,7,8), breaks = c(1,2,3,4,5,6,7,8)) +
     ylab('number of strokes') +
     theme(legend.position = c(0.5, 0.8), text = element_text(size=18), 
-          element_line(size=1), element_rect(size=2, color="#00000")) 
+          element_line(size=1), element_rect(size=2, color="#00000"),
+          aspect.ratio = 2) 
   
 
 tmpprefix = paste0('plots/refgame', version, '/num_strokes')
@@ -188,50 +170,13 @@ No differences between condition in pre phase.
 d %>%
   mutate(phase = as.factor(ifelse(repetition == 0, 'pre', 'post')),
         condition = as.factor(condition)) %>%
-  filter(phase == 'pre') %>%
-  group_by(gameID, condition) %>%
+  group_by(gameID, condition, phase) %>%
   summarize(acc = mean(outcome)) %>%
   spread(condition, acc) %>%
   mutate(diff = repeated - control) %>%
   gather(metric, value, repeated, control, diff) %>%
-  group_by(metric) %>%
+  group_by(metric, phase) %>%
   tidyboot_mean(value)
-```
-
-### Model
-
-Now we run a mixed-effects model to evaluate an interaction in BIS changes across conditions. The maximal model for the interaction between repetition and condition is
-
-```
-interaction_lmm <- lmer(bis ~ phase * condition + (1 + phase*condition | target) + (1 + phase*condition | gameID)
-```
-
-```{r}
-d.bis.drawDuration %>%
-  ungroup() %>%
-  filter(repetition == 0 | repetition == 7) %>% 
-  mutate(phase = as.factor(ifelse(repetition == 0, 'pre', 'post')),
-         condition = as.factor(condition)) %>%
-  lmer(bis ~ phase * condition + (0 + phase * condition | gameID),
-        data = .,
-        contrasts = list(phase = contr.sum(2), condition = contr.sum(2))) %>%
-  summary()
-```
-
-As a sanity check, we double-check our estimate with another optimization algorithm (which converges).
-
-```{r}
-d.bis.drawDuration %>%
-  ungroup() %>%
-  filter(repetition == 0 | repetition == 7) %>% 
-  mutate(phase = as.factor(ifelse(repetition == 0, 'pre', 'post')),
-         condition = as.factor(condition)) %>%
-  nlme::lme(bis ~ phase * condition,
-            random = ~ phase * condition | gameID,
-            data = .,
-            contrasts = list(phase = contr.sum(2), condition = contr.sum(2)),
-            control = nlme::lmeControl(opt='optim', maxIter = 1000)) %>%
-  summary()
 ```
 
 ### 'Design plot' for analysis (Fig. 3B)
@@ -242,18 +187,18 @@ d.means <- d.bis.drawDuration %>%
   filter(repetition == 7) %>% 
   mutate(condition = as.factor(condition)) %>%
   group_by(gameID, condition) %>%
-  summarize(bis_relative = mean(bis_relative))
+  summarize(bis = mean(bis_relative))
 
 d.means %>%
-  ggplot(aes(x = condition, y = bis_relative, color = condition, fill = condition, group = gameID)) +
+  ggplot(aes(x = condition, y = bis, color = condition, fill = condition, group = gameID)) +
     geom_point(position = position_jitter(width = 0.1, seed = 123), alpha = 0.1, shape=21,) +
     geom_line(position = position_jitter(width = 0.1, seed = 123), 
               alpha = 0.05, color = 'black') +
     geom_line(aes(group = 1), size = 1, alpha = 0.5, color = 'black', 
-              data = d.means %>% group_by(condition) %>% summarize(bis_relative = mean(bis_relative))) +
-    geom_point(aes(group = NA), size = 5, data = d.means %>% group_by(condition) %>% summarize(bis_relative = mean(bis_relative))) +
+              data = d.means %>% group_by(condition) %>% summarize(bis = mean(bis))) +
+    geom_point(aes(group = NA), size = 5, data = d.means %>% group_by(condition) %>% summarize(bis = mean(bis))) +
     geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper, y = empirical_stat, group = NA), 
-                  data = d.means %>% group_by(condition) %>% tidyboot_mean(bis_relative),
+                  data = d.means %>% group_by(condition) %>% tidyboot_mean(bis),
                   width =0, size = 2) +
     geom_hline(yintercept = 0) +
     theme_few() +
@@ -263,9 +208,62 @@ d.means %>%
 ggsave(here('../graphical_conventions_latex/natcomms2020/figures/fig3b_variability.pdf'), units = 'cm', height = 9, width = 5)
 ```
 
-### Double-check the mixed-effects model just on raw accuracy.
+### Model
 
-Looks like only the condition random effect is justified for 2.0 replication
+Now we run a mixed-effects model to evaluate an interaction in BIS changes across conditions. The maximal model for the interaction between repetition and condition is this:
+
+```
+interaction_lmm <- lmer(bis ~ phase * condition + (0 + phase*condition | gameID)
+```
+
+```{r}
+d.bis.drawDuration %>%
+  ungroup() %>%
+  filter(repetition == 0 | repetition == 7) %>% 
+  mutate(phase = as.factor(ifelse(repetition == 0, 'pre', 'post')),
+         condition = as.factor(condition)) %>%
+  lmer(bis ~ phase * condition + (0 + phase * condition | gameID),
+        data = .,
+       control = lmerControl(optimizer = 'bobyqa'),
+        contrasts = list(phase = contr.sum(2), condition = contr.sum(2))) %>%
+  summary()
+```
+
+Double-check normalizing just within pre-post (balanced)
+
+```{r}
+d.bis.drawDuration.prepost.raw <- paste0(data_prefix, '_bis_prepostonly_drawDuration_', path) %>%
+  read_csv() %>% 
+  select(-`...1`)
+
+d.bis.drawDuration.prepost.raw %>%
+  filter(repetition == 0 | repetition == 7) %>% 
+  mutate(phase = as.factor(ifelse(repetition == 0, 'pre', 'post')),
+         condition = as.factor(condition)) %>%
+  lmer(bis ~ phase * condition + (0 + phase * condition | gameID),
+        data = .,
+       control = lmerControl(optimizer = 'bobyqa'),
+        contrasts = list(phase = contr.sum(2), condition = contr.sum(2))) %>%
+  summary()
+```
+
+### Bayesian version
+
+```{r}
+cont.brm.input <- d.bis.drawDuration %>% 
+  ungroup() %>%
+  filter(repetition == 0 | repetition == 7) %>% 
+  mutate(phase = as.factor(ifelse(repetition == 0, 'pre', 'post')),
+         condition = as.factor(condition))
+
+contrasts(cont.brm.input$condition) <- "contr.sum"
+contrasts(cont.brm.input$phase) <- "contr.sum"
+
+cont.brm <-  brm(bis ~ phase * condition + (0 + phase * condition | gameID),
+                 data = cont.brm.input)
+```
+
+### Double-check the mixed-effects model just on raw accuracy and raw RT.
 
 ```{r}
 model.input <- d %>%
@@ -274,36 +272,28 @@ model.input <- d %>%
          condition = as.factor(condition),
          outcome = as.numeric(outcome)) 
 
-model1 <- glmer(outcome ~ phase * condition + (1 | gameID), family= 'binomial', data = model.input) 
-model3 <- glmer(outcome ~ phase * condition + (1 + condition | gameID), family= 'binomial', data = model.input,
-                control = glmerControl(optimizer = 'bobyqa')) 
-model4 <- glmer(outcome ~ phase * condition + (1 + phase + condition | gameID), family= 'binomial', data = model.input,
-                control = glmerControl(optimizer = 'bobyqa'))
+contrasts(model.input$condition) <- "contr.sum"
+contrasts(model.input$phase) <- "contr.sum"
 
-anova(model1, model3, model4)
-summary(model3)
-```
+glmer(outcome ~ phase * condition + (1 + phase * condition | gameID), 
+                family= 'binomial', data = model.input,
+                control = glmerControl(optimizer = 'bobyqa')) %>%
+  summary()
 
-Double-check the full structure using brms
+lmer(drawDuration ~ phase * condition + (1 + phase * condition | gameID), 
+      data = model.input,
+      control = lmerControl(optimizer = 'bobyqa')) %>%
+  summary()
 
-```{r}
+### Bayesian version
 model.input %>%
   brm(outcome ~ phase * condition + (1 + phase * condition | gameID), 
       family= bernoulli(), 
       data = . )
-```
 
-Raw accuracy diff in pre and post
-
-```{r}
-d %>%
-  filter(phase== 'pre'| phase == 'post') %>%
-  group_by(gameID,phase,condition) %>%
-  summarize(accuracy=mean(outcome)) %>%
-  spread(phase, accuracy) %>%
-  mutate(diff = post - pre) %>%
-  group_by(condition) %>%
-  tidyboot_mean(diff) 
+model.input %>%
+  brm(drawDuration ~ phase * condition + (1 + phase * condition | gameID), 
+      data = . )
 ```
 
 ### Sketch features (Fig. 4B)
@@ -337,10 +327,17 @@ M_mat = read_csv(paste0(featureprefix, '/METADATA.csv')) %>%
 run stats
 
 ```{r}
+library(lmerTest)
 true_lmer.within <- make_within_df(M_mat, F_mat_raw_nonorm, 'cor') %>% 
   filter(rep2 == rep1 + 1) %>% 
   ungroup()
-summary(lmer(sim ~ poly(rep1,2) + (1  | gameID) + (1 | target), data = true_lmer.within))
+
+lmer(sim ~ poly(rep1, 2) + (1 + poly(rep1, 1)  | gameID), 
+     data = true_lmer.within) %>%
+  summary()
+
+stability.brm <- brm(sim ~ mo(rep1) + (1  | gameID), 
+     data = true_lmer.within) 
 ```
 
 compute both true empirical & permuted output
