@@ -148,8 +148,8 @@ if __name__ == '__main__':
 
 	if iterationName in ['run3_size4_waiting','run4_generalization']:
 		## read in both group dataframes for run3_run4_waiting and run4_generalization and join
-		D1 = pd.read_csv(os.path.join(csv_dir,ITERATIONNAME2ALTNAME[iterationName], 'graphical_conventions_group_data_run3_run4_waiting.csv'.format(iterationName)))
-		D2 = pd.read_csv(os.path.join(csv_dir,ITERATIONNAME2ALTNAME[iterationName], 'graphical_conventions_group_data_run4_generalization.csv'.format(iterationName)))
+		D1 = pd.read_csv(os.path.join(csv_dir,ITERATIONNAME2ALTNAME[iterationName], 'graphical_conventions_group_data_run3_size4_waiting.csv'))
+		D2 = pd.read_csv(os.path.join(csv_dir,ITERATIONNAME2ALTNAME[iterationName], 'graphical_conventions_group_data_run4_generalization.csv'))
 		D = pd.concat([D1,D2])
 		D.to_csv(os.path.join(csv_dir, ITERATIONNAME2ALTNAME[iterationName],'graphical_conventions_group_data_run3run4.csv'), index=False)
 		print('Loaded in run3_size4_waiting and run4_generalization group data and concatenated to generate run3run4 version')		

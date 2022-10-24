@@ -59,7 +59,10 @@ CATEGORY_TO_OBJECT_run2 = {
     'waiting': ['waiting_00','waiting_01','waiting_02','waiting_03','waiting_04','waiting_05','waiting_06','waiting_07','waiting_08','waiting_09','waiting_10','waiting_11']
 }
 
-ITERATIONNAME2ALTNAME = {'run3run4': 'refgame1.2', 
+# helper dictionary for mapping iteration names to alt iteration names
+ITERATIONNAME2ALTNAME = {'run3_size4_waiting': 'refgame1.2', 
+                         'run4_generalization': 'refgame1.2',
+                         'run3run4': 'refgame1.2', 
                          'run5_submitButton': 'refgame2.0'}
 
 ################################################################################################
