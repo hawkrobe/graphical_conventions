@@ -98,7 +98,7 @@ class FeatureExtractor():
             else:
                 im_ = im.convert(mode="RGB")
         else:
-            im_ = im
+            im_ = im.convert(mode="RGB")
 
         loader = transforms.Compose([
             transforms.Pad(self.padding),
@@ -176,10 +176,10 @@ class FeatureExtractor():
                         break
 
                 if n == self.num_images//self.batch_size:
-                    print('b', b)
-                    print(img_batch.size())
+                    # print('b', b)
+                    # print(img_batch.size())
                     img_batch = torch.narrow(img_batch,0,0,b)
-                    print(img_batch.size())
+                    # print(img_batch.size())
                     paths_batch = paths_batch[:b + 1]
 
                 # extract features from batch
