@@ -168,13 +168,15 @@ No differences between condition in pre phase.
 
 ```{r}
 d %>%
+  filter(repetition == 0 | repetition == 7) %>% 
   mutate(phase = as.factor(ifelse(repetition == 0, 'pre', 'post')),
         condition = as.factor(condition)) %>%
   group_by(gameID, condition, phase) %>%
-  summarize(acc = mean(outcome)) %>%
-  spread(condition, acc) %>%
-  mutate(diff = repeated - control) %>%
-  gather(metric, value, repeated, control, diff) %>%
+  summarize(acc = mean(outcome), rt = mean(drawDuration)) %>%
+  pivot_wider(names_from = condition, values_from = c(acc, rt)) %>%
+  mutate(diff_rt = rt_repeated - rt_control,
+         diff_acc = acc_repeated - acc_control) %>%
+  gather(metric, value, rt_repeated, rt_control, acc_repeated, acc_control, diff_rt, diff_acc) %>%
   group_by(metric, phase) %>%
   tidyboot_mean(value)
 ```
@@ -332,33 +334,34 @@ true_lmer.within <- make_within_df(M_mat, F_mat_raw_nonorm, 'cor') %>%
   filter(rep2 == rep1 + 1) %>% 
   ungroup()
 
-lmer(sim ~ poly(rep1, 2) + (1 + poly(rep1, 1)  | gameID), 
+lmer(sim ~ poly(rep1, 2) + (1 + poly(rep1, 2)  || gameID), 
      data = true_lmer.within) %>%
   summary()
 
 stability.brm <- brm(sim ~ mo(rep1) + (1  | gameID), 
      data = true_lmer.within) 
+print(summary(stability.brm), digits = 10)
 ```
 
 compute both true empirical & permuted output
 
 ```{r}
-num_permutations <- 1000
-empirical.within <- compute_within_convergence(M_mat, F_mat_raw_nonorm, 
-                                               'empirical', method = 'cor', nboot = 1000)
+# num_permutations <- 1000
+# empirical.within <- compute_within_convergence(
+#   M_mat, F_mat_raw_nonorm, 'empirical', method = 'cor', nboot = 1000
+# )
 ```
 
 Make Fig. 4B
 
 ```{r}
-ggplot(empirical.within, aes(x = `rep diff`, y = empirical_stat, 
-                     fill = sample_id, color = sample_id, group = sample_id)) +
-    geom_point(size = 2, 
-               data = . %>% filter(sample_id == 'empirical')) +
-    geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0,
-                  data = . %>% filter(sample_id == 'empirical')) +
-    geom_smooth(method = 'lm', formula = y ~ poly(x, 2), se = F,
-                data = . %>% filter(sample_id == 'empirical')) +
+true_lmer.within %>%
+  group_by(rep1) %>%
+  tidyboot_mean(sim) %>%
+  ggplot(aes(x = rep1, y = empirical_stat)) +
+    geom_point(size = 2) +
+    geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0) +
+    geom_smooth(method = 'lm', formula = y ~ poly(x, 2), se = F) +
     scale_color_manual(values=c("#d07e93", "#163c4e")) + 
     scale_fill_manual(values=c("#d07e93", "#163c4e")) + 
     scale_x_discrete(labels = c('(1,2)','(2,3)', '(3,4)', '(4,5)', '(5,6)' ,'(6,7)','(7,8)')) +
@@ -369,7 +372,8 @@ ggplot(empirical.within, aes(x = `rep diff`, y = empirical_stat,
     xlab('repetition pair') +
     guides(color = F, fill = F) +
     theme(legend.position = c(0.5, 0.8), text = element_text(size=18), 
-          element_line(size=1), element_rect(size=2, color="#00000"))
+          element_line(size=1), element_rect(size=2, color="#00000"),
+          aspect.ratio = 2)
 
 
 tmpprefix = paste0('plots/refgame', version, '/within')
@@ -397,23 +401,16 @@ d.recog %>%
   tally()
 ```
 
-### Analysis of task performance efficiency (BIS)
-
-get bootstrapped relative BIS x repetition, broken out by version
-
-```{r}
-d.recog.boot = d.recog %>%
-  group_by(version,repetition_1) %>%
-  tidyboot_mean(col=bis_relative) %>%
-  ungroup()
-```
-
-### Make Fig. 5
+### Make Fig. 5A
 
 (plotting BIS  from refgame, yoked, and scrambled40 experiments)
 
 ```{r}
-d.recog.boot %>%  
+d.recog %>%
+  group_by(gameID, version,repetition_1) %>%
+  summarize(bis_relative = mean(bis_relative)) %>%
+  group_by(version, repetition_1) %>%
+  tidyboot_mean(bis_relative) %>%
   ggplot(aes(x = repetition_1, y = empirical_stat, color = version, fill = version)) +
     geom_line(size=1.5) +
     geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2, color = NA) +
@@ -428,25 +425,70 @@ d.recog.boot %>%
 
 ggsave(paste0('plots/refgame', version, '/recog_BIS_timeseries.pdf'), width=14, height = 10, units='cm')
 ```
-
-mixed-effects model of BIS (balancing accuracy vs. drawDuration) from communication vs. yoked experiments
+### Make Fig. 5B
 
 ```{r}
-library(lmerTest)
-d.recog %>% 
-  filter(version %in% c('communication', 'yoked')) %>%
-  lmer(bis_relative ~ version * repetition + (1 | orig_gameID), ## used to have more maximal random effects structure (1 + version * repetition | orig_gameID), but this led to singular fit
-       data = .) %>%
-  summary()
+d.means <- d.recog %>%
+  ungroup() %>%
+  filter(repetition == 7) %>% 
+  mutate(version = as.factor(version)) %>%
+  group_by(orig_gameID, version) %>%
+  summarize(bis = mean(bis_relative))
+
+d.means %>%
+  ggplot(aes(x = version, y = bis, color = version, fill = version, group = orig_gameID)) +
+    geom_point(position = position_jitter(width = 0.1, seed = 123), alpha = 0.1, shape=21,) +
+    geom_line(position = position_jitter(width = 0.1, seed = 123), 
+              alpha = 0.05, color = 'black') +
+    geom_line(aes(group = 1), size = 1, alpha = 0.5, color = 'black', 
+              data = d.means %>% group_by(version) %>% summarize(bis = mean(bis))) +
+    geom_point(aes(group = NA), size = 5, data = d.means %>% group_by(version) %>% summarize(bis = mean(bis))) +
+    geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper, y = empirical_stat, group = NA), 
+                  data = d.means %>% group_by(version) %>% tidyboot_mean(bis),
+                  width =0, size = 2) +
+    geom_hline(yintercept = 0) +
+    theme_few() +
+    labs(x = '') +
+    theme(aspect.ratio = 2, legend.position = 'none')
+
+ggsave(here('../graphical_conventions_latex/natcomms2020/figures/fig5b_variability.pdf'), units = 'cm', height = 10, width = 5)
 ```
 
-mixed-effects model of BIS (balancing accuracy vs. drawDuration) from yoked vs. scrambled40 experiments
+### Yoked vs. scrambled40 analysis
 
 ```{r}
 d.recog %>% 
   filter(version %in% c('yoked', 'shuffled')) %>%
-  lmer(bis_relative ~ version * repetition + (1 + repetition | gameID), 
+  lmer(bis_relative ~ version * poly(repetition, 2) + (1 + version + poly(repetition, 1) || gameID), 
+       control = lmerControl(optimize = 'bobyqa'),
               data = .) %>%
+  summary()
+```
+
+### Yoked vs. communication analysis
+
+```{r}
+d.recog %>% 
+  filter(version %in% c('communication', 'yoked')) %>%
+  lmer(bis ~ version * poly(repetition, 2) + (0 + poly(repetition, 2) || orig_gameID),
+       data = .) %>%
+  summary()
+
+recog.brm <- d.recog %>% 
+  filter(version %in% c('communication', 'yoked')) %>%
+  brm(bis ~ version * mo(repetition) + (0 + version * mo(repetition) | orig_gameID),
+       data = .) 
+
+```
+
+Comparing raw accuracy and RT
+
+```{r}
+d.acc %>% 
+  filter(version %in% c('communication','yoked')) %>%
+  filter(condition == 'repeated') %>%
+  lmer(accuracy ~ version + (1 | gameID),
+      data = .) %>%
   summary()
 ```
 
@@ -470,17 +512,6 @@ d.acc %>%
   mutate(diff = `7` - `0`) 
 ```
 
-Comparing communication vs. yoked accuracies
-
-```{r}
-d.acc %>% 
-  filter(version %in% c('communication','yoked')) %>%
-  filter(condition == 'repeated') %>%
-  lmer(accuracy ~ version + (1 | gameID),
-      data = .) %>%
-  summary()
-```
-
 Plotting accuracy timecourse for communication and yoked (SXXX)
 
 ```{r}
@@ -494,14 +525,10 @@ d.acc.rt.boot %>%
   ggplot(aes(x = repetition, y = empirical_stat, 
              color = version, fill = version, linetype = condition)) +
     geom_line() +
-    # geom_line(aes(group = interaction(gameID, condition), y = value, 
-    #               color = version, fill = version, linetype = condition), 
-    #           alpha = 0.05, data = d.acc %>% gather(measure, value, accuracy, RT)) +
     geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2, color = NA) +
     theme_few() +
     ylab('') +
     xlab('repetition') +
-    #geom_hline(aes(yintercept=0.25),linetype='dashed') +
     facet_grid(measure ~ version, scales = 'free') +
     scale_x_continuous(breaks=seq(1,8,by=1)) + 
     scale_color_manual(values=c("#163c4e", "#d07e93", '#54792f')) + 
