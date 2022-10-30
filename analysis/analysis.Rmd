@@ -28,6 +28,7 @@ d <- paste0(data_prefix, '_group_data_', path) %>%
   read_csv() %>% 
   select(-png)
 
+
 d.bis.drawDuration.raw <- paste0(data_prefix, '_bis_drawDuration_', path) %>%
   read_csv() %>% 
   select(-`...1`)
@@ -87,7 +88,7 @@ d.bis.drawDuration %>%
           element_rect(size=2, color="#00000"))
 
 tmp_prefix = here('../graphical_conventions_latex/natcomms2020/figures/')
-ggsave(paste0(tmpprefix, 'refgame_BIS_timeseries', version, '.pdf'), width=14, height = 10, units='cm')
+ggsave(paste0(tmp_prefix, 'fig3a_refgame_BIS', version, '.pdf'), width=14, height = 10, units='cm')
 ```
 
 ### Simple effect of BIS in repetition condition
@@ -156,8 +157,7 @@ d %>%
           aspect.ratio = 2) 
   
 
-tmpprefix = paste0('plots/refgame', version, '/num_strokes')
-ggsave(paste0(tmpprefix, version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
+ggsave(paste0(tmp_prefix, 'fig4a_strokes', version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
 ```
 
 ## Section 2.2: Object-specificity
@@ -174,11 +174,27 @@ d %>%
   group_by(gameID, condition, phase) %>%
   summarize(acc = mean(outcome), rt = mean(drawDuration)) %>%
   pivot_wider(names_from = condition, values_from = c(acc, rt)) %>%
-  mutate(diff_rt = rt_repeated - rt_control,
-         diff_acc = acc_repeated - acc_control) %>%
-  gather(metric, value, rt_repeated, rt_control, acc_repeated, acc_control, diff_rt, diff_acc) %>%
+  mutate(diff_rt = rt_control - rt_repeated,
+         diff_acc = acc_control - acc_repeated) %>%
+  #gather(metric, value, rt_post, rt_pre, acc_post, acc_pre, diff_rt, diff_acc) %>%
+  gather(metric, value, rt_control, rt_repeated, acc_control, acc_repeated, diff_rt, diff_acc) %>%
   group_by(metric, phase) %>%
   tidyboot_mean(value)
+```
+
+Check 1st vs. 2nd occurrence for repeated vs. control
+
+```{r}
+d %>%
+  filter(repetition == 0 |
+           (condition == 'repeated' & repetition == 1) |
+           (condition == 'control' & repetition == 7)) %>% 
+  left_join(d.bis.drawDuration, by = c('gameID', 'trialNum', 'repetition', 'condition')) %>%
+  mutate(occurrence = as.factor(ifelse(repetition == 0, 'first', 'second')),
+        condition = as.factor(condition)) %>%
+  group_by(condition, occurrence) %>%
+  summarize(acc = mean(outcome.x), rt = mean(drawDuration.x), bis = mean(bis_relative)) 
+
 ```
 
 ### 'Design plot' for analysis (Fig. 3B)
@@ -207,7 +223,7 @@ d.means %>%
     labs(x = '') +
     theme(aspect.ratio = 2, legend.position = 'none')
 
-ggsave(here('../graphical_conventions_latex/natcomms2020/figures/fig3b_variability.pdf'), units = 'cm', height = 9, width = 5)
+ggsave(paste0(tmp_prefix, 'fig3b_variability', version, '.pdf'), units = 'cm', height = 9, width = 5)
 ```
 
 ### Model
@@ -224,14 +240,14 @@ d.bis.drawDuration %>%
   filter(repetition == 0 | repetition == 7) %>% 
   mutate(phase = as.factor(ifelse(repetition == 0, 'pre', 'post')),
          condition = as.factor(condition)) %>%
-  lmer(bis ~ phase * condition + (0 + phase * condition | gameID),
+  lmer(bis ~ phase * condition + (0 + phase * condition | gameID) ,
         data = .,
        control = lmerControl(optimizer = 'bobyqa'),
         contrasts = list(phase = contr.sum(2), condition = contr.sum(2))) %>%
   summary()
 ```
 
-Double-check normalizing just within pre-post (balanced)
+Double-check normalizing just within pre-post (footnote)
 
 ```{r}
 d.bis.drawDuration.prepost.raw <- paste0(data_prefix, '_bis_prepostonly_drawDuration_', path) %>%
@@ -242,7 +258,7 @@ d.bis.drawDuration.prepost.raw %>%
   filter(repetition == 0 | repetition == 7) %>% 
   mutate(phase = as.factor(ifelse(repetition == 0, 'pre', 'post')),
          condition = as.factor(condition)) %>%
-  lmer(bis ~ phase * condition + (0 + phase * condition | gameID),
+  lmer(bis ~ phase * condition + (0 + phase * condition | gameID) ,
         data = .,
        control = lmerControl(optimizer = 'bobyqa'),
         contrasts = list(phase = contr.sum(2), condition = contr.sum(2))) %>%
@@ -288,12 +304,12 @@ lmer(drawDuration ~ phase * condition + (1 + phase * condition | gameID),
   summary()
 
 ### Bayesian version
-model.input %>%
+acc.control.brm <- model.input %>%
   brm(outcome ~ phase * condition + (1 + phase * condition | gameID), 
       family= bernoulli(), 
       data = . )
 
-model.input %>%
+rt.control.brm <- model.input %>%
   brm(drawDuration ~ phase * condition + (1 + phase * condition | gameID), 
       data = . )
 ```
@@ -334,12 +350,12 @@ true_lmer.within <- make_within_df(M_mat, F_mat_raw_nonorm, 'cor') %>%
   filter(rep2 == rep1 + 1) %>% 
   ungroup()
 
-lmer(sim ~ poly(rep1, 2) + (1 + poly(rep1, 2)  || gameID), 
+lmer(sim ~ poly(rep1, 2) + (1 + poly(rep1, 1)  || gameID) +  (1 + poly(rep1, 1)  || target), 
      data = true_lmer.within) %>%
   summary()
 
 stability.brm <- brm(sim ~ mo(rep1) + (1  | gameID), 
-     data = true_lmer.within) 
+                     data = true_lmer.within) 
 print(summary(stability.brm), digits = 10)
 ```
 
@@ -356,6 +372,8 @@ Make Fig. 4B
 
 ```{r}
 true_lmer.within %>%
+  group_by(rep1, gameID) %>%
+  summarize(sim = mean(sim)) %>%
   group_by(rep1) %>%
   tidyboot_mean(sim) %>%
   ggplot(aes(x = rep1, y = empirical_stat)) +
@@ -375,9 +393,7 @@ true_lmer.within %>%
           element_line(size=1), element_rect(size=2, color="#00000"),
           aspect.ratio = 2)
 
-
-tmpprefix = paste0('plots/refgame', version, '/within')
-ggsave(paste0(tmpprefix, version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
+ggsave(paste0(tmp_prefix, 'fig4b_stability', version, '.pdf'), height = 10, width = 7, units = 'cm', useDingbats = F)
 ```
 
 ## Section 2.3: Conventions are interaction-specific 
@@ -423,7 +439,7 @@ d.recog %>%
     theme(legend.position = c(0.18, 0.8), text = element_text(size=18), element_line(size=1), element_rect(size=2, color="#00000")) +
     theme(legend.text=element_text(size=12), legend.background = element_rect(fill="transparent"))
 
-ggsave(paste0('plots/refgame', version, '/recog_BIS_timeseries.pdf'), width=14, height = 10, units='cm')
+ggsave(paste0(tmp_prefix, 'fig5a_recog', version, '.pdf'), width=14, height = 10, units='cm')
 ```
 ### Make Fig. 5B
 
@@ -459,10 +475,15 @@ ggsave(here('../graphical_conventions_latex/natcomms2020/figures/fig5b_variabili
 ```{r}
 d.recog %>% 
   filter(version %in% c('yoked', 'shuffled')) %>%
-  lmer(bis_relative ~ version * poly(repetition, 2) + (1 + version + poly(repetition, 1) || gameID), 
+  lmer(bis_relative ~ version * poly(repetition, 2) + (1 + version * poly(repetition, 1) || orig_gameID), 
        control = lmerControl(optimize = 'bobyqa'),
               data = .) %>%
   summary()
+
+recog.brm <- d.recog %>% 
+  filter(version %in% c('yoked', 'shuffled')) %>%
+  brm(bis_relative ~ version * mo(repetition) + (1 + version * mo(repetition) || orig_gameID), 
+       data = .) 
 ```
 
 ### Yoked vs. communication analysis
@@ -470,15 +491,9 @@ d.recog %>%
 ```{r}
 d.recog %>% 
   filter(version %in% c('communication', 'yoked')) %>%
-  lmer(bis ~ version * poly(repetition, 2) + (0 + poly(repetition, 2) || orig_gameID),
+  lmer(bis_relative ~ version * poly(repetition, 2) + (1 + poly(repetition, 1)  || orig_gameID),
        data = .) %>%
   summary()
-
-recog.brm <- d.recog %>% 
-  filter(version %in% c('communication', 'yoked')) %>%
-  brm(bis ~ version * mo(repetition) + (0 + version * mo(repetition) | orig_gameID),
-       data = .) 
-
 ```
 
 Comparing raw accuracy and RT
