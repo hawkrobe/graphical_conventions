@@ -24,7 +24,6 @@ exp2 = ['run5_submitButton']
 
 
 python generate_refgame_dataframe.py --iterationName run3_size4_waiting
-python generate_refgame_dataframe.py --iterationName run4_generalization
 python generate_refgame_dataframe.py --iterationName run5_submitButton
 
 '''
@@ -97,8 +96,8 @@ if __name__ == '__main__':
 	## if iterationName is either run3_size4_waiting OR run4_generalization, 
 	## generate dataframes for each and concatenate to generate single group dataframe
 	## with suffix `run3run4`.
-	if iterationName in ['run3_size4_waiting','run4_generalization']:
-		iterationNameList = ['run4_generalization','run3_size4_waiting']
+	if iterationName in ['run4_generalization', 'run3_size4_waiting']:
+		iterationNameList = ['run3_size4_waiting', 'run4_generalization']
 	else:
 		iterationNameList = ['run5_submitButton']
 
@@ -117,7 +116,7 @@ if __name__ == '__main__':
 		## generate actual dataframe and get only valid games (filtering out games with low accuracy, timeouts)
 		D = h.generate_dataframe(coll, complete_games, thisIterationName, csv_dir)
 
-		# ## filter crazies and add column
+		## filter crazies and add column
 		D = h.find_crazies(D)
 
 		## add features for recognition experiment
@@ -143,8 +142,10 @@ if __name__ == '__main__':
 			D = D.assign(category_subset_condition = pd.Series(D['category'] + D['subset'] + D['condition']))
 
 		## save out master dataframe for this iteration
-		D.to_csv(os.path.join(csv_dir,ITERATIONNAME2ALTNAME[thisIterationName], 'graphical_conventions_group_data_{}.csv'.format(thisIterationName)), index=False)
+		full_out_path = os.path.join(csv_dir,ITERATIONNAME2ALTNAME[thisIterationName], 'graphical_conventions_group_data_{}.csv'.format(thisIterationName))
+		D.to_csv(full_out_path, index=False)
 		print('Saved out group dataframe from iteration: {}!'.format(thisIterationName))
+		print('Full path: {}'.format(full_out_path))
 
 	if iterationName in ['run3_size4_waiting','run4_generalization']:
 		## read in both group dataframes for run3_run4_waiting and run4_generalization and join
