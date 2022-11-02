@@ -146,10 +146,10 @@ def find_crazies(D):
     # print('numStrokeThresh = {}, numCurvesPerSketchThresh = {}'.format(numStrokeThresh,numCurvesPerSketchThresh))
     crazies = []
     for i, d in D.iterrows():
-        if (d['numStrokes'] < numStrokeThresh) and (d['numCurvesPerSketch'] < numCurvesPerSketchThresh):
+        if (d['numStrokes'] < numStrokeThresh) or (d['numCurvesPerSketch'] < numCurvesPerSketchThresh):
             crazies.append(False) 
         else:
-            crazies.append(True) ## a sketch is crazy if it satisfies EITHER of the above criteria
+            crazies.append(True) ## a sketch is crazy if it satisfies BOTH of the above criteria
             # print('num strokes = {}, num curves = {}'.format(d['numStrokes'], d['numCurvesPerSketch']))
     D['crazy'] = crazies
     return D
