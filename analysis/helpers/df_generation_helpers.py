@@ -141,15 +141,18 @@ def get_complete_and_valid_games(games,
 def find_crazies(D):
     arr1 = np.array(D['numStrokes'])
     arr2 = np.array(D['numCurvesPerSketch'])
+    numStrokeThresh = np.median(arr1) + 3 * np.std(arr1)
+    numCurvesPerSketchThresh = np.median(arr2) + 3 * np.std(arr2)
+    # print('numStrokeThresh = {}, numCurvesPerSketchThresh = {}'.format(numStrokeThresh,numCurvesPerSketchThresh))
     crazies = []
     for i, d in D.iterrows():
-        if d['numStrokes'] < np.median(arr1) + 3 * np.std(arr1) and d['numCurvesPerSketch'] < np.median(arr2) + 3 * np.std(arr2):
-            crazies.append(False)
+        if (d['numStrokes'] < numStrokeThresh) and (d['numCurvesPerSketch'] < numCurvesPerSketchThresh):
+            crazies.append(False) 
         else:
-            crazies.append(True)
+            crazies.append(True) ## a sketch is crazy if it satisfies EITHER of the above criteria
+            # print('num strokes = {}, num curves = {}'.format(d['numStrokes'], d['numCurvesPerSketch']))
     D['crazy'] = crazies
     return D
-
 
 ## detect low accuracy games
 def detect_outlier_games(D,criterion='3sd'):
