@@ -118,6 +118,7 @@ if __name__ == '__main__':
 
 		## filter crazies and add column
 		D = h.find_crazies(D)
+		print('How many crazy sketches (exceessively many strokes and/or curves per sketch)? {}.'.format(D['crazy'].sum()))
 
 		## add features for recognition experiment
 		D = h.add_recog_session_ids(D)
