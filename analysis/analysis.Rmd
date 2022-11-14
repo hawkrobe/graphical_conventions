@@ -116,6 +116,20 @@ lmer(numStrokes ~ poly(repetition,2) + (1 + poly(repetition,1) | gameID),
   summary()
 ```
 
+## Raw values 
+
+```{r}
+d %>%
+  filter(repetition == 0 | repetition == 7) %>% 
+  mutate(phase = as.factor(ifelse(repetition == 0, 'pre', 'post')),
+        condition = as.factor(condition)) %>%
+  group_by(gameID, condition, phase) %>%
+  summarize(acc = mean(outcome), rt = mean(drawDuration)) %>%
+  gather(metric, value, acc, rt) %>%
+  group_by(metric, phase, condition) %>%
+  tidyboot_mean(value)
+```
+
 ### Bayesian versions of these (2.1A)
 
 ```{r}
@@ -405,6 +419,12 @@ d.recog <- read_csv(paste0(data_prefix, '_recog_data_bis_', path)) %>%
   mutate(version = factor(version, levels = c("refgame","yoked","scrambled40"), 
                           labels = c("communication", "yoked", "shuffled" )))  %>%
   filter(!is.na(version))
+
+d.acc <- read_csv(paste0(data_prefix, '_recog_data_', path)) %>%
+  mutate(version = factor(version, levels = c("refgame","yoked","scrambled40"), 
+                          labels = c("communication", "yoked", "shuffled" ))) %>%
+  mutate(repetition = ifelse(version == 'communication' & condition == 'control' & repetition == 1, 
+                             7, repetition))
 ```
 
 get counts for each condition
@@ -441,6 +461,7 @@ d.recog %>%
 
 ggsave(paste0(tmp_prefix, 'fig5a_recog', version, '.pdf'), width=14, height = 10, units='cm')
 ```
+
 ### Make Fig. 5B
 
 ```{r}
@@ -484,6 +505,26 @@ recog.brm <- d.recog %>%
   filter(version %in% c('yoked', 'shuffled')) %>%
   brm(bis_relative ~ version * mo(repetition) + (1 + version * mo(repetition) || orig_gameID), 
        data = .) 
+
+d.acc %>% 
+  filter(version %in% c('yoked', 'shuffled')) %>%
+  filter(condition == 'repeated') %>%
+  filter(repetition %in% c(0,7)) %>%
+  mutate(phase = factor(ifelse(repetition == 0, 'pre', 'post'))) %>%
+  glmer(correct ~ phase * version + (1 | gameID),
+        family = 'binomial',
+      data = .) %>%
+  summary()
+
+d.acc %>% 
+  filter(version %in% c('yoked', 'shuffled')) %>%
+  filter(condition == 'repeated') %>%
+  filter(repetition %in% c(0,7)) %>%
+  mutate(phase = factor(ifelse(repetition == 0, 'pre', 'post'))) %>%
+  lmer(logRT ~ phase*version + (1 | gameID),
+       data = .) %>%
+  summary()
+
 ```
 
 ### Yoked vs. communication analysis
@@ -494,15 +535,14 @@ d.recog %>%
   lmer(bis_relative ~ version * poly(repetition, 2) + (1 + poly(repetition, 1)  || orig_gameID),
        data = .) %>%
   summary()
-```
 
-Comparing raw accuracy and RT
+## On raw RT
 
-```{r}
 d.acc %>% 
   filter(version %in% c('communication','yoked')) %>%
   filter(condition == 'repeated') %>%
-  lmer(accuracy ~ version + (1 | gameID),
+  glmer(correct ~ version + (1 | gameID),
+        family = 'binomial',
       data = .) %>%
   summary()
 ```
@@ -510,16 +550,9 @@ d.acc %>%
 ### Analysis of change in raw accuracy & RT across all three groups: communication, yoked, shuffled
 
 ```{r}
-d.acc <- read_csv(paste0(data_prefix, '_recog_data_', path)) %>%
-  mutate(version = factor(version, levels = c("refgame","yoked","scrambled40"), 
-                          labels = c("communication", "yoked", "shuffled" ))) %>%
-  mutate(repetition = ifelse(version == 'communication' & condition == 'control' & repetition == 1, 7, repetition)) %>%
-  group_by(version,condition, gameID,repetition) %>%
-  summarize(accuracy=mean(correct), RT = mean(logRT)) %>%
-  filter(!is.na(version))
-
 d.acc %>%
-  gather(measure, value, accuracy, RT) %>%
+  mutate(RT = exp(logRT)) %>%
+  gather(measure, value, correct, RT) %>%
   filter(repetition %in% c(0,7)) %>%
   group_by(measure, condition, repetition, version) %>%
   summarize(m=mean(value)) %>%
@@ -530,7 +563,13 @@ d.acc %>%
 Plotting accuracy timecourse for communication and yoked (SXXX)
 
 ```{r}
-d.acc.rt.boot = d.acc %>%
+d.acc.rt.boot <- read_csv(paste0(data_prefix, '_recog_data_', path)) %>%
+  mutate(version = factor(version, levels = c("refgame","yoked","scrambled40"), 
+                          labels = c("communication", "yoked", "shuffled" ))) %>%
+  mutate(repetition = ifelse(version == 'communication' & condition == 'control' & repetition == 1, 7, repetition)) %>%
+  group_by(version,condition, gameID,repetition) %>%
+  summarize(accuracy=mean(correct), RT = mean(logRT)) %>%
+  filter(!is.na(version)) %>%
   gather(measure, value, accuracy, RT) %>%
   group_by(measure, version,condition,repetition) %>%
   tidyboot_mean(value) %>%
